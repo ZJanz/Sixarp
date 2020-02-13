@@ -1,25 +1,27 @@
 import React from 'react';
 
+import ConfigProvider from '../ConfigProvider';
+import EntityManager from '../Entity';
 import Animator from '../Animator';
-import Entity from '../Entity';
 import Keyboard from '../Keyboard';
 import Player from '../Player';
 
-const App = () => {
-
-  return (
-    <div className="container">
-      <ConfigProvider>
-        <Keyboard>
-          <Entities>
-            <Player>
-              <Animator />
-            </Player>
-          </Entities>
-        </Keyboard>
-      </ConfigProvider>
-    </div>
-  );
+class App extends React.Component {
+  render() {
+    return (
+      <div className="container">
+        <ConfigProvider>
+          <Keyboard>
+            <EntityManager>
+              <Player>
+                <Animator />
+              </Player>
+            </EntityManager>
+          </Keyboard>
+        </ConfigProvider>
+      </div>
+    );
+  }
 };
 
 export default App;

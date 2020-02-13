@@ -1,5 +1,7 @@
 import CanvasConfig from './canvas.config.json';
+import EntityConfig from './entities.config.json';
 
 export default {
-  canvas: CanvasConfig
+  canvas: CanvasConfig,
+  entities: EntityConfig
 };

@@ -1,52 +1,46 @@
-import React, { useEffect, useState, useContext } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 
 import KeyboardContext from '../../contexts/KeyboardContext';
 import PlayerContext from '../../contexts/PlayerContext';
 import EntityContext from '../../contexts/EntityContext';
 
+import Canvas from '../Canvas';
+
 const Animator = () => {
-  const {
-    keyState
-  } = useContext(KeyboardContext);
+  const keyboardContext = useContext(KeyboardContext);
 
-  const {
-    render: renderPlayer,
-    updatePositionFromKeyState
-  } = useContext(PlayerContext);
+  const playerContext = useContext(PlayerContext);
 
-  const {
-    render: renderEntities
-  } = useContext(EntityContext);
+  const entityContext = useContext(EntityContext);
 
-  const [animationFrame, setAnimationFrame] = useState(null);
-  const [canvasContext, setCanvasContext] = useState(null);
+  const animationFrame = useRef(null);
+  const canvasContext = useRef(null);
 
   const doAnimation = () => {
+    const ctx = canvasContext.current;
+
     ctx.clearRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
 
-    updatePositionFromKeyState(keyState);
-    renderPlayer(ctx);
-    renderEntities(ctx);
+    playerContext.updatePositionFromKeyState(keyboardContext.keyState);
+    playerContext.renderPlayer(ctx);
+    entityContext.renderEntities(ctx);
 
-    setAnimationFrame(requestAnimationFrame(doAnimation));
+    animationFrame.current = requestAnimationFrame(doAnimation);
   };
 
   useEffect(() => {
-    setAnimationFrame(requestAnimationFrame(doAnimation));
+    animationFrame.current = requestAnimationFrame(doAnimation);
   }, [canvasContext]);
 
   useEffect(() => {
     return () => {
-      cancelAnimationFrame(animationFrame);
+      cancelAnimationFrame(animationFrame.current);
     }
   }, []);
   
-  return (<Canvas ctxCallback={setCanvasContext} />);
-};
+  console.log(keyboardContext, playerContext, entityContext);
 
-Animator.propTypes = {
-  canvasRef: PropTypes.ref.isRequired
+  return (<Canvas ctxCallback={(ctx) => { canvasContext.current = ctx }} />);
 };
 
 export default Animator

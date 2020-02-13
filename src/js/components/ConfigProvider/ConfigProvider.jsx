@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import applyValueToPath from '../../helpers/applyValueToPath';
 import ConfigContext from '../../contexts/ConfigContext';
-import BaseConfigurations from '../..';
+import BaseConfigurations from '../../config';
 
 const ConfigProvider = (props) => {
   const {

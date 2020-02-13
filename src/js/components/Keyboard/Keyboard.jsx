@@ -14,7 +14,7 @@ const Keyboard = (props) => {
   const initialKeyState = keybinds.reduce((obj, key) => {
     obj[key] = false;
     return obj;
-  });
+  }, {});
 
   const [keyState, setKeyState] = useState(initialKeyState);
 
@@ -28,12 +28,12 @@ const Keyboard = (props) => {
 
   return (<KeyboardEventHandler
     handleKeys={keybinds}
-    handleKeyEvent='keydown'
+    handleEventType='keydown'
     onKeyEvent={appKeyDownEventHandler}
   >
     <KeyboardEventHandler
       handleKeys={keybinds}
-      handleKeyEvent='keyup'
+      handleEventType='keyup'
       onKeyEvent={appKeyUpEventHandler}
     >
       <KeyboardContext.Provider keyState={keyState}>

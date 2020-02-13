@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import ConfigContext from '../../contexts/ConfigContext';
 
 const Canvas = (props) => {
 
   const configuration = useContext(ConfigContext);
+  
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
+
+  useEffect(function updateDimensionsOnConfigChange() {
+    if (configuration && configuration.canvas) {
+      setWidth(configuration.canvas.width);
+      setHeight(configuration.canvas.height);
+    }
+  }, [configuration]);
 
   const {
     ctxCallback
@@ -12,9 +22,9 @@ const Canvas = (props) => {
 
   return (
     <canvas
-      height={configuration.canvas.height}
+      height={height}
       ref={node => node ? ctxCallback(node.getContext('2d')) : null}
-      width={configuration.canvas.width}
+      width={width}
     />
   );
 };

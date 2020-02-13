@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import PlayerContext from '../../contexts/PlayerContext';
@@ -11,7 +11,7 @@ const Player = (props) => {
     position: positionProps,
   } = props;
 
-  const [position, setPosition] = useState(position || { x: 20, y: 40 });
+  const [position, setPosition] = useState(positionProps || { x: 20, y: 40 });
 
   const updatePositionFromKeyState = (keyState) => {  
     const newPosition = { ...position };

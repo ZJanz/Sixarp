@@ -1,23 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import EntityContext from '../../contexts/EntityContext';
-import { createEntity, isEntity, deltaEntities } from './components/Entity';
+import ConfigContext from '../../contexts/ConfigContext';
+import { createEntity, isEntity, deltaEntities } from './helpers/entityLifecycle';
 
 const EntityManager = (props) => {
 
   const {
-    configuration: { entity: entityConfig },
     entities,
     children
   } = props;
 
   const [entityList, updateEntityList] = useState([]);
 
+  const configurations = useContext(ConfigContext);
+
   useEffect(function loadInitialEntities() {
-    updateEntityList(
-      entityConfig.initialEntities.map(
-        template => createEntity(template)
-      )
-    );
+    if (configurations && configurations.entities) {
+      updateEntityList(
+        entityConfig.initialEntities.map(
+          template => createEntity(template)
+        )
+      );
+    }
   }, []);
 
   useEffect(function updateEntityListFromProps() {

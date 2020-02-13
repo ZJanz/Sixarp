@@ -1,5 +1,7 @@
-import React from 'react';
+'use strict';
 
-export default React.createContext({
-  keyState: {}
-});
+import { createContext } from 'react';
+
+const KeyboardContext = createContext(null);
+
+export default KeyboardContext;
