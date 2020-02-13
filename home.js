@@ -23,6 +23,8 @@ for(var i = 0; i <= 9; i++){
 
 
 
+
+
 function drawBall(){
 	ctx.beginPath();
 	ctx.arc(ballx, bally, ballRadius, 0, Math.PI*2);
@@ -34,30 +36,24 @@ function drawBall(){
 
 
 
-function drawRect(i){
+function drawRect(){
+	for(var i = 0; i < 9; i++){
 		ctx.beginPath();
-		ctx.rect(rectangles[i].recx + movedx, rectangles[i].recy + movedy, 50, 50);
+		ctx.rect(rectangles[i].recx - movedx, rectangles[i].recy - movedy, 50, 50);
 		ctx.fillStyle = "#FF0000";
 		ctx.fill();
 		ctx.closePath();
+	}
 }
 
 
-function drawRect2(){
-	ctx.beginPath();
-	ctx.rect(80 + movedx, 120 + movedy, 50, 50);
-	ctx.fillStyle = "#00FF00";
-	ctx.fill();
-	ctx.closePath();
-}
 
 function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	movement();
-	for(var i = 0; i < 9; i++){
-		drawRect(i);
-	}
+	drawRect();
 	drawBall();
+	document.getElementById("cords").innerHTML = "X= " + xCord + "Y= " + yCord;
 }
 
 
@@ -98,18 +94,26 @@ function keyUpHandler(e) {
 var movedx = 0;
 var movedy = 0;
 
+var xCord = canvas.width/2;
+var yCord = canvas.height/2;
+document.getElementById("cords").innerHTML = "X= " + xCord + "Y= " + yCord;
+
 function movement(){
 	if (rightPressed === true) {
-		movedx -= 2;
+		movedx += 2;
+		xCord += 2;
 	}
 	if (leftPressed === true){
-		movedx += 2;
+		movedx -= 2;
+		xCord -= 2;
 	}
 	if (downPressed === true){
-		movedy -= 2;
+		movedy += 2;
+		yCord += 2;
 	}
 	if (upPressed === true){
-		movedy += 2;
+		movedy -= 2;
+		yCord -=2;
 	}
 }
 
