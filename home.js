@@ -21,7 +21,24 @@ for(var i = 0; i <= 9; i++){
 		})
 	}
 
-
+ function drawGrid(){
+    var gridSize = 40;
+    ctx.beginPath();
+    ctx.translate(0.5, 0.5);
+    for(var x = 0 - movedx; x < canvas.width; x += gridSize){
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvas.clientHeight);
+      ctx.strokeStyle = '#ffffff';
+      ctx.stroke();
+    }    
+    for(var y = 0 - movedy; y < canvas.height; y += gridSize){
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y);
+      ctx.strokeStyle = '#ffffff';
+      ctx.stroke();
+    }    
+    ctx.translate(-0.5, -0.5);
+  }
 
 
 
@@ -48,9 +65,12 @@ function drawRect(){
 
 
 
+
+
 function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	movement();
+	drawGrid();
 	drawRect();
 	drawBall();
 	document.getElementById("cords").innerHTML = "X= " + xCord + "Y= " + yCord;
