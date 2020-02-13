@@ -1,8 +1,8 @@
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 
-var x = canvas.width/2;
-var y = canvas.height/2;
+var ballx = canvas.width/2;
+var bally = canvas.height/2;
 
 var ballRadius = 10;
 
@@ -11,13 +11,21 @@ var leftPressed = false;
 var upPressed = false;
 var downPressed = false;
 
-var objects = [];
+
+var rectangles = [];
+
+for(var i = 0; i <= 9; i++){
+		rectangles.push({
+			recx : Math.random() * 640,
+			recy : Math.random() * 480
+		})
+	}
 
 
 
 function drawBall(){
 	ctx.beginPath();
-	ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+	ctx.arc(ballx, bally, ballRadius, 0, Math.PI*2);
 	ctx.fillStyle = "#0095DD";
 	ctx.fill();
 	ctx.closePath();
@@ -25,19 +33,17 @@ function drawBall(){
 }
 
 
-function drawRect(){
-	movement();
-	ctx.beginPath();
-	ctx.rect(20 + movedx, 40 + movedy, 50, 50);
-	ctx.fillStyle = "#FF0000";
-	ctx.fill();
-	ctx.closePath();
+
+function drawRect(i){
+		ctx.beginPath();
+		ctx.rect(rectangles[i].recx + movedx, rectangles[i].recy + movedy, 50, 50);
+		ctx.fillStyle = "#FF0000";
+		ctx.fill();
+		ctx.closePath();
 }
 
 
 function drawRect2(){
-	
-	movement();
 	ctx.beginPath();
 	ctx.rect(80 + movedx, 120 + movedy, 50, 50);
 	ctx.fillStyle = "#00FF00";
@@ -47,9 +53,11 @@ function drawRect2(){
 
 function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	drawRect();
+	movement();
+	for(var i = 0; i < 9; i++){
+		drawRect(i);
+	}
 	drawBall();
-	drawRect2();
 }
 
 
