@@ -11,6 +11,10 @@ var leftPressed = false;
 var upPressed = false;
 var downPressed = false;
 
+var objects = [];
+
+
+
 function drawBall(){
 	ctx.beginPath();
 	ctx.arc(x, y, ballRadius, 0, Math.PI*2);
@@ -20,26 +24,22 @@ function drawBall(){
 
 }
 
-var posx = 20;
-var posy = 40;
 
 function drawRect(){
 	movement();
 	ctx.beginPath();
-	ctx.rect(posx, posy, 50, 50);
+	ctx.rect(20 + movedx, 40 + movedy, 50, 50);
 	ctx.fillStyle = "#FF0000";
 	ctx.fill();
 	ctx.closePath();
 }
 
-var posx2 = 80;
-var posy2 = 120;
 
 function drawRect2(){
 	
 	movement();
 	ctx.beginPath();
-	ctx.rect(posx2, posy2, 50, 50);
+	ctx.rect(80 + movedx, 120 + movedy, 50, 50);
 	ctx.fillStyle = "#00FF00";
 	ctx.fill();
 	ctx.closePath();
@@ -87,22 +87,21 @@ function keyUpHandler(e) {
     }
 }
 
+var movedx = 0;
+var movedy = 0;
+
 function movement(){
 	if (rightPressed === true) {
-		posx -= 2;
-		posx2 -= 2;
+		movedx -= 2;
 	}
 	if (leftPressed === true){
-		posx += 2;
-		posx2 += 2;
+		movedx += 2;
 	}
 	if (downPressed === true){
-		posy -= 2;
-		posy2 -= 2;
+		movedy -= 2;
 	}
 	if (upPressed === true){
-		posy += 2;
-		posy2 += 2;
+		movedy += 2;
 	}
 }
 
