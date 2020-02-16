@@ -21,17 +21,18 @@ for(var i = 0; i <= 9; i++){
 		})
 	}
 
- function drawGrid(){
+function drawGrid(){
     var gridSize = 40;
     ctx.beginPath();
     ctx.translate(0.5, 0.5);
-    for(var x = 0 - movedx; x < canvas.width; x += gridSize){
+    for(var x = 0 - (movedx % gridSize); x < canvas.width; x += gridSize){
       ctx.moveTo(x, 0);
       ctx.lineTo(x, canvas.clientHeight);
       ctx.strokeStyle = '#ffffff';
       ctx.stroke();
+
     }    
-    for(var y = 0 - movedy; y < canvas.height; y += gridSize){
+    for(var y = 0 - (movedy % gridSize); y < canvas.height; y += gridSize){
       ctx.moveTo(0, y);
       ctx.lineTo(canvas.width, y);
       ctx.strokeStyle = '#ffffff';
