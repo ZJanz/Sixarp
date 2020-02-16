@@ -11,18 +11,18 @@ var leftPressed = false;
 var upPressed = false;
 var downPressed = false;
 
+var gridSize = 40;
 
 var rectangles = [];
 
 for(var i = 0; i <= 9; i++){
 		rectangles.push({
-			recx : Math.random() * 640,
-			recy : Math.random() * 480
+			recx : gridSize * Math.floor(Math.random() * 16),
+			recy : gridSize * Math.floor(Math.random() * 12)
 		})
 	}
 
-function drawGrid(){
-    var gridSize = 40;
+ function drawGrid(){
     ctx.beginPath();
     ctx.translate(0.5, 0.5);
     for(var x = 0 - (movedx % gridSize); x < canvas.width; x += gridSize){
@@ -57,7 +57,7 @@ function drawBall(){
 function drawRect(){
 	for(var i = 0; i < 9; i++){
 		ctx.beginPath();
-		ctx.rect(rectangles[i].recx - movedx, rectangles[i].recy - movedy, 50, 50);
+		ctx.rect(rectangles[i].recx - movedx, rectangles[i].recy - movedy, gridSize, gridSize);
 		ctx.fillStyle = "#FF0000";
 		ctx.fill();
 		ctx.closePath();
