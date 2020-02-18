@@ -30,6 +30,7 @@ var state = {
 
 socket.on('playerInfo', function(playersS){
    players = playersS;
+   draw();
  });
 
 socket.on('playerArrayPOS', function(result){
@@ -98,7 +99,6 @@ function drawRect(){
 //client
 function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	movement();
 	drawGrid();
 	drawRect();
 	drawBall();
@@ -149,28 +149,3 @@ function keyUpHandler(e) {
         socket.emit('movement', state);
     }
 }
-
-//client
-
-
-function movement(){
-	if (state.rightPressed === true) {
-		movedx += 2;
-		
-	}
-	if (state.leftPressed === true){
-		movedx -= 2;
-		
-	}
-	if (state.downPressed === true){
-		movedy += 2;
-		
-	}
-	if (state.upPressed === true){
-		movedy -= 2;
-	
-	}
-}
-
-//client
-var interval = setInterval(draw, 10);
