@@ -19,6 +19,8 @@ var rectangles = [];
 var players = [];
 var gridSize = 40;
 
+var arrayPOS;
+
 var state = {
   rightPressed : false,
   leftPressed : false,
@@ -30,18 +32,22 @@ socket.on('playerInfo', function(playersS){
    players = playersS;
  });
 
+socket.on('playerArrayPOS', function(result){
+  arrayPOS = result;
+})
+
 //client
  function drawGrid(){
     ctx.beginPath();
     ctx.translate(0.5, 0.5);
-    for(var x = 0 - (movedx % gridSize); x < canvas.width; x += gridSize){
+    for(var x = 0 - (players[arrayPOS].movedx % gridSize); x < canvas.width; x += gridSize){
       ctx.moveTo(x, 0);
       ctx.lineTo(x, canvas.clientHeight);
       ctx.strokeStyle = '#ffffff';
       ctx.stroke();
 
     }    
-    for(var y = 0 - (movedy % gridSize); y < canvas.height; y += gridSize){
+    for(var y = 0 - (players[arrayPOS].movedy % gridSize); y < canvas.height; y += gridSize){
       ctx.moveTo(0, y);
       ctx.lineTo(canvas.width, y);
       ctx.strokeStyle = '#ffffff';
@@ -55,7 +61,7 @@ socket.on('playerInfo', function(playersS){
 function drawPlayers(){
   for(var i = 0; i < players.length; i++){
     ctx.beginPath();
-    ctx.arc(players[i].x - movedx, players[i].y - movedy, ballRadius, 0, Math.PI*2);
+    ctx.arc(players[i].x - players[arrayPOS].movedx, players[i].y - players[arrayPOS].movedy, ballRadius, 0, Math.PI*2);
     ctx.fillStyle = "#0095DD";
     ctx.fill();
     ctx.closePath();
@@ -79,7 +85,7 @@ socket.on('rectangleInfo', function(rectanglesS){
 function drawRect(){
 	for(var i = 0; i < rectangles.length; i++){
 		ctx.beginPath();
-		ctx.rect(rectangles[i].recx * gridSize - movedx, rectangles[i].recy * gridSize - movedy, gridSize, gridSize);
+		ctx.rect(rectangles[i].recx * gridSize - players[arrayPOS].movedx, rectangles[i].recy * gridSize - players[arrayPOS].movedy, gridSize, gridSize);
 		ctx.fillStyle = "#FF0000";
 		ctx.fill();
 		ctx.closePath();
@@ -97,7 +103,7 @@ function draw() {
 	drawRect();
 	drawBall();
   drawPlayers();
-	document.getElementById("cords").innerHTML = "X= " + xCord + "Y= " + yCord;
+	document.getElementById("cords").innerHTML = "X= " + players[arrayPOS].x + "Y= " + players[arrayPOS].y;
 }
 
 
@@ -109,66 +115,61 @@ document.addEventListener("keyup", keyUpHandler, false);
 function keyDownHandler(e) {
     if(e.key == "Right" || e.key == "ArrowRight") {
         state.rightPressed = true;
-        
+        socket.emit('movement', state);
     }
     if(e.key == "Left" || e.key == "ArrowLeft") {
         state.leftPressed = true;
-       
+       socket.emit('movement', state);
     }
     if(e.key == "Down" || e.key == "ArrowDown") {
         state.downPressed = true;
-       
+       socket.emit('movement', state);
     }
     if(e.key == "Up" || e.key == "ArrowUp") {
         state.upPressed = true;
-        
+        socket.emit('movement', state);
     }
 }
 
 function keyUpHandler(e) {
     if(e.key == "Right" || e.key == "ArrowRight") {
         state.rightPressed = false;
-        
+        socket.emit('movement', state);
     }
     if(e.key == "Left" || e.key == "ArrowLeft") {
         state.leftPressed = false;
-        
+        socket.emit('movement', state);
     }
     if(e.key == "Down" || e.key == "ArrowDown") {
         state.downPressed = false;
-        
+        socket.emit('movement', state);
     }
     if(e.key == "Up" || e.key == "ArrowUp") {
         state.upPressed = false;
-        
+        socket.emit('movement', state);
     }
 }
 
 //client
 
-//server
-var xCord = canvas.width/2;
-var yCord = canvas.height/2;
-document.getElementById("cords").innerHTML = "X= " + xCord + "Y= " + yCord;
 
 function movement(){
 	if (state.rightPressed === true) {
 		movedx += 2;
-		xCord += 2;
+		
 	}
 	if (state.leftPressed === true){
 		movedx -= 2;
-		xCord -= 2;
+		
 	}
 	if (state.downPressed === true){
 		movedy += 2;
-		yCord += 2;
+		
 	}
 	if (state.upPressed === true){
 		movedy -= 2;
-		yCord -=2;
+	
 	}
-  socket.emit('movement', state);
 }
 
 //client
