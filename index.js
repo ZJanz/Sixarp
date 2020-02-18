@@ -52,10 +52,10 @@ io.on('connection', function(socket){
 
 });
 
-function ping() {
-	move()
-	io.emit('playerInfo', playersS)
-}
+// function ping() {
+// 	move()
+// 	io.emit('playerInfo', playersS)
+// }
 
 function move(){
 	for(i = 0; i < playersS.length; i++){
@@ -82,6 +82,11 @@ function move(){
 
 	  		}
 	  	}
+}
+
+function ping(){
+	move();
+	io.emit('playerInfo', playersS);
 }
 
 var interval = setInterval(ping, 10);
