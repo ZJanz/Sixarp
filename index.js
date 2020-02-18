@@ -25,10 +25,13 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
   	console.log(socket.id + " connected");
+  	io.to(`${socket.id}`).emit('playerArrayPOS', playersS.length);
   	playerIDs.push(socket.id);
   	playersS.push({
   		x : 320,
   		y : 240,
+  		movedx : 0,
+  		movedy : 0,
   		right : false,
   		left : false,
   		up : false,
@@ -41,32 +44,47 @@ io.on('connection', function(socket){
   		playersS[playerIDs.indexOf(socket.id)].up = state.upPressed;
   		playersS[playerIDs.indexOf(socket.id)].down = state.downPressed;
 
-  		if (playersS[playerIDs.indexOf(socket.id)].right === true){
-  			playersS[playerIDs.indexOf(socket.id)].x += 2;
-  		}
-
-  		if (playersS[playerIDs.indexOf(socket.id)].left === true){
-  			playersS[playerIDs.indexOf(socket.id)].x -= 2;
-  		}
-
-  		if (playersS[playerIDs.indexOf(socket.id)].up === true){
-  			playersS[playerIDs.indexOf(socket.id)].y -= 2;
-  		}
-
-  		if (playersS[playerIDs.indexOf(socket.id)].down === true){
-  			playersS[playerIDs.indexOf(socket.id)].y += 2;
-  		}
-  		io.emit('playerInfo', playersS)
-
-
   	} )
-  	io.emit('playerInfo', playersS)
   	io.emit('rectangleInfo', rectanglesS);
   	socket.on('disconnect', function(){
     	console.log(socket.id + ' disconnected');
 	})
 
 });
+
+function ping() {
+	move()
+	io.emit('playerInfo', playersS)
+}
+
+function move(){
+	for(i = 0; i < playersS.length; i++){
+		if (playersS[i].right === true){
+	  			playersS[i].x += 2;
+	  			playersS[i].movedx += 2;
+	  		}
+
+	  		if (playersS[i].left === true){
+	  			playersS[i].x -= 2;
+	  			playersS[i].movedx -= 2;
+
+	  		}
+
+	  		if (playersS[i].up === true){
+	  			playersS[i].y -= 2;
+	  			playersS[i].movedy -= 2;
+
+	  		}
+
+	  		if (playersS[i].down === true){
+	  			playersS[i].y += 2;
+	  			playersS[i].movedy += 2;
+
+	  		}
+	  	}
+}
+
+var interval = setInterval(ping, 10);
 
 
 http.listen(3000, function(){
