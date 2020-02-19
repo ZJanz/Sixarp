@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import EntityContext from '../../contexts/EntityContext';
 import ConfigContext from '../../contexts/ConfigContext';
 import { createEntity, isEntity, deltaEntities } from './helpers/entityLifecycle';
@@ -13,20 +13,6 @@ const EntityManager = (props) => {
   const [entityList, updateEntityList] = useState([]);
 
   const configurations = useContext(ConfigContext);
-
-  useEffect(function loadInitialEntities() {
-    if (configurations && configurations.entities) {
-      updateEntityList(
-        entityConfig.initialEntities.map(
-          template => createEntity(template)
-        )
-      );
-    }
-  }, []);
-
-  useEffect(function updateEntityListFromProps() {
-    updateEntityList(entityList);
-  }, [entities]);
 
   const addEntities = (newEntities) => {
     if(!isEntity(newEntities)) return;
@@ -48,12 +34,35 @@ const EntityManager = (props) => {
     entityList.forEach(({ render }) => render(ctx));
   };
 
+  const providerRef = useRef(null);
+
+  useEffect(function updateEntityListFromProps() {
+    updateEntityList(entityList);
+  }, [entities]);
+
+  useEffect(function updateProviderRef() {
+    providerRef.current =  {
+      ...providerRef.current,
+      entityList
+    };
+  }, [entityList]);
+
+  useEffect(function loadInitialEntities() {
+    if (configurations && configurations.entities) {
+      updateEntityList(
+        entityConfig.initialEntities.map(
+          template => createEntity(template)
+        )
+      );
+    }
+    providerRef.current = {
+      addEntities, removeEntities, render: renderEntities, entityList
+    };
+  }, []);
+
   return (
     <EntityContext.Provider
-      addEntities={addEntities}
-      entityList={entityList}
-      removeEntities={removeEntities}
-      render={renderEntities}
+      value={providerRef.current}
     >
       {children}
     </EntityContext.Provider>

@@ -1,10 +1,5 @@
 import React from 'react';
 
-const EntityContext = React.createContext({
-  addEntities: () => { },
-  entityList: [],
-  removeEntities: () => { },
-  render: () => { }
-});
+const EntityContext = React.createContext(null);
 
 export default EntityContext;

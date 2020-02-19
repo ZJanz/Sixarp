@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import applyValueToPath from '../../helpers/applyValueToPath';
@@ -10,14 +10,25 @@ const ConfigProvider = (props) => {
     children
   } = props;
 
+  const providerRef = useRef(null);
+
   const [configurations, setConfigurations] = useState(BaseConfigurations);
 
   const updateConfigByPath = (path, value) => {
     setConfigurations(applyValueToPath({ ...configurations }, path, value));
+    providerRef.current = { ...providerRef.current, configurations };
   };
 
+  useEffect(() => {
+    providerRef.current = { ...providerRef.current, configurations };
+  }, [configurations]);
+
+  useEffect(() => {
+    providerRef.current = { configurations, updateConfig: updateConfigByPath };
+  }, []);
+
   return (
-    <ConfigContext.Provider configurations={configurations} updateConfig={updateConfigByPath}>
+    <ConfigContext.Provider value={providerRef.current}>
       {children}
     </ConfigContext.Provider>
   )

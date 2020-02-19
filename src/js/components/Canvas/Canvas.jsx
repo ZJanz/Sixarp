@@ -4,17 +4,23 @@ import ConfigContext from '../../contexts/ConfigContext';
 
 const Canvas = (props) => {
 
-  const configuration = useContext(ConfigContext);
+  const configContext = useContext(ConfigContext);
   
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
 
   useEffect(function updateDimensionsOnConfigChange() {
-    if (configuration && configuration.canvas) {
-      setWidth(configuration.canvas.width);
-      setHeight(configuration.canvas.height);
+    if (configContext) {
+      const {
+        configurations: {
+          canvas
+        }
+      } = configContext;
+
+      setWidth(canvas.width);
+      setHeight(canvas.height);
     }
-  }, [configuration]);
+  }, [configContext]);
 
   const {
     ctxCallback

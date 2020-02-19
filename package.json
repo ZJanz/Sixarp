@@ -3,6 +3,7 @@
   "version": "0.0.5",
   "description": "",
   "dependencies": {
+    "keycode": "^2.2.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-keyboard-event-handler": "^1.5.3",
@@ -53,7 +54,7 @@
   "scripts": {
     "postinstall": "npm run webpack",
     "webpack": "webpack",
-    "webpack:dev": "npm run webpack -- --mode=development --watch"
+    "webpack:dev": "./node_modules/.bin/webpack-dev-server -d"
   },
   "keywords": [],
   "author": "",

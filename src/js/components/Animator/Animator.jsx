@@ -4,43 +4,54 @@ import KeyboardContext from '../../contexts/KeyboardContext';
 import PlayerContext from '../../contexts/PlayerContext';
 import EntityContext from '../../contexts/EntityContext';
 
-import Canvas from '../Canvas';
+const Animator = (props) => {
+  const {
+    canvasContext
+  } = props;
 
-const Animator = () => {
   const keyboardContext = useContext(KeyboardContext);
 
   const playerContext = useContext(PlayerContext);
 
   const entityContext = useContext(EntityContext);
 
+  const [ctx, setCanvasContext] = useState(canvasContext);
+
   const animationFrame = useRef(null);
-  const canvasContext = useRef(null);
 
   const doAnimation = () => {
-    const ctx = canvasContext.current;
-
     ctx.clearRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
 
-    playerContext.updatePositionFromKeyState(keyboardContext.keyState);
-    playerContext.renderPlayer(ctx);
-    entityContext.renderEntities(ctx);
+    playerContext.updatePositionFromKeyState(keyboardContext);
+    playerContext.render(ctx);
+    entityContext.render(ctx);
 
     animationFrame.current = requestAnimationFrame(doAnimation);
   };
 
-  useEffect(() => {
-    animationFrame.current = requestAnimationFrame(doAnimation);
+  useEffect(function updateCtxOnPropChange() {
+    if(canvasContext) {
+      setCanvasContext(canvasContext);
+    }
   }, [canvasContext]);
 
-  useEffect(() => {
-    return () => {
+  useEffect(function updateAnimationFrameOnStateChange() {
+    if(!ctx) return;
+    if (animationFrame.current) {
       cancelAnimationFrame(animationFrame.current);
     }
-  }, []);
-  
-  console.log(keyboardContext, playerContext, entityContext);
+    animationFrame.current = requestAnimationFrame(doAnimation);
+  }, [ctx, keyboardContext, playerContext, entityContext]);
 
-  return (<Canvas ctxCallback={(ctx) => { canvasContext.current = ctx }} />);
+  useEffect(function cancelFrameOnUnmount() {
+    return () => {
+      if (animationFrame.current) {
+        cancelAnimationFrame(animationFrame.current);
+      }
+    };
+  }, []);
+
+  return <div></div>;
 };
 
 export default Animator

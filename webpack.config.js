@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 console.log(`[webpack.config.js] Executing in mode: ${process.env.NODE_ENV || 'NOT SET'}`)
 
-const WEBPACK_DEV_SERVER_PORT = 32388;
+const WEBPACK_DEV_SERVER_PORT = 32488;
 
 module.exports = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',

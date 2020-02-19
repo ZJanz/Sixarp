@@ -1,56 +1,70 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import PlayerContext from '../../contexts/PlayerContext';
 
 const Player = (props) => {
   const {
-    acceleration = 2,
+    acceleration = 10,
     children,
     color = "#FF0000",
     position: positionProps,
   } = props;
 
-  const [position, setPosition] = useState(positionProps || { x: 20, y: 40 });
+  const positionRef = useRef(null);
 
   const updatePositionFromKeyState = (keyState) => {  
+    const position = positionRef.current;
     const newPosition = { ...position };
 
     const { w, up, left, a, down, s, right, d } = keyState;
 
     if (w || up) {
-      newPosition.y += acceleration;
+      newPosition.y -= acceleration;
     }
     if (a || left) {
       newPosition.x -= acceleration;
     }
     if (s || down) {
-      newPosition.y -= acceleration;
+      newPosition.y += acceleration;
     }
     if (d || right) {
       newPosition.x += acceleration;
     }
 
-    setPosition(newPosition);
+    if (position.x !== newPosition.x || position.y !== newPosition.y) {
+      positionRef.current = newPosition;
+    }
   };
 
   useEffect(function updatePositionFromProps() {
-    setPosition(position);
+    positionRef.current = positionProps;
   }, [positionProps]);
 
   const render = (ctx) => {
+    const position = positionRef.current;
+
     ctx.beginPath();
-    ctx.rect(newPosition.x, newPosition.y, 50, 50);
+    ctx.rect(position.x, position.y, 50, 50);
     ctx.fillStyle = color;
     ctx.fill();
     ctx.closePath();
   };
 
+  const providerRef = useRef({
+    color, render, updatePositionFromKeyState
+  });
+
+  useEffect(function setPositionRefOnMount() {
+    positionRef.current = positionProps || { x: 20, y: 40 }
+  }, []);
+
+  useEffect(function updateProviderRefOnStateChange() {
+    providerRef.current = { ...providerRef.current, position: positionRef.current };
+  }, [positionRef]);
+
   return (
-    <PlayerContext.Provider 
-      color={color}
-      render={render}
-      updatePositionFromKeyState={updatePositionFromKeyState}>
+    <PlayerContext.Provider value={providerRef.current}>
       {children}
     </PlayerContext.Provider>
   );

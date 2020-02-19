@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import KeyboardEventHandler from 'react-keyboard-event-handler';
+import keycode from 'keycode';
 
 import KeyboardContext from '../../contexts/KeyboardContext';
 
@@ -18,29 +18,32 @@ const Keyboard = (props) => {
 
   const [keyState, setKeyState] = useState(initialKeyState);
 
-  const appKeyDownEventHandler = (key, e) => {
-    setKeyState({ ...keyState, [key]: true });
+  const appKeyDownEventHandler = ({ keyCode }) => {
+    const keyValue = keycode(keyCode);
+    if (keybinds.includes(keyValue)) {
+      setKeyState({ ...keyState, [keyValue]: true });
+    }
   };
 
-  const appKeyUpEventHandler = (key, e) => {
-    setKeyState({ ...keyState, [key]: false });
+  const appKeyUpEventHandler = ({ keyCode }) => {
+    const keyValue = keycode(keyCode);
+    if (keybinds.includes(keyValue)) {
+      setKeyState({ ...keyState, [keyValue]: false });
+    }
   };
 
-  return (<KeyboardEventHandler
-    handleKeys={keybinds}
-    handleEventType='keydown'
-    onKeyEvent={appKeyDownEventHandler}
-  >
-    <KeyboardEventHandler
-      handleKeys={keybinds}
-      handleEventType='keyup'
-      onKeyEvent={appKeyUpEventHandler}
+  return (
+    <div
+      onKeyDown={appKeyDownEventHandler}
+      onKeyUp={appKeyUpEventHandler}
+      tabIndex="0"
     >
-      <KeyboardContext.Provider keyState={keyState}>
+      <KeyboardContext.Provider value={keyState}>
         {children}
       </KeyboardContext.Provider>
-    </KeyboardEventHandler>
-  </KeyboardEventHandler>);
+    </div>
+  );
 };
+
 
 export default Keyboard;
