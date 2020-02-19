@@ -37,14 +37,14 @@ describe('[helpers/applyValueToPath] Apply Value To Path', () => {
     let existingObject, result;
     beforeEach(() => {
       existingObject = { existing: { obj: { path: { x: 10, y: 20 } } } };
-      result = functionUnderTest({ ...existingObject }, 'existing.object.path.z', 30);
+      result = functionUnderTest({ ...existingObject }, 'existing.obj.path.z', 30);
     });
     it('should apply the value to the expected depth', () => {
-      expect(result.existing.object.path.z).to.equal(30);
+      expect(result.existing.obj.path.z).to.equal(30);
       expect(Object.keys(result).length).to.equal(1);
       expect(Object.keys(result.existing).length).to.equal(1);
-      expect(Object.keys(result.existing.object).length).to.equal(1);
-      expect(Object.keys(result.existing.object.path).length).to.equal(3);
+      expect(Object.keys(result.existing.obj).length).to.equal(1);
+      expect(Object.keys(result.existing.obj.path).length).to.equal(3);
     });
   });
 });
