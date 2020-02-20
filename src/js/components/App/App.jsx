@@ -7,6 +7,8 @@ import Keyboard from '../Keyboard';
 import Player from '../Player';
 import Canvas from '../Canvas';
 
+import './App.scss';
+
 class App extends React.Component {
 
   constructor(props) {
@@ -19,8 +21,10 @@ class App extends React.Component {
       canvasContext
     } = this.state;
 
+    const containerClassName = 'root-container';
+
     return (
-      <div className="container">
+      <div className={containerClassName}>
         <ConfigProvider>
           <Keyboard>
             <EntityManager>
@@ -28,7 +32,9 @@ class App extends React.Component {
                 <Animator canvasContext={canvasContext} />
               </Player>
             </EntityManager>
-            <Canvas ctxCallback={(ctx) => {
+            <Canvas 
+              containerClassName={containerClassName}
+              ctxCallback={(ctx) => {
               if (canvasContext !== ctx) {
                 this.setState({ canvasContext: ctx });
               }

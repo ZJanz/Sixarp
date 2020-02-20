@@ -51,17 +51,17 @@ const Player = (props) => {
     ctx.closePath();
   };
 
+  const getPosition = () => {
+    return positionRef.current;
+  };
+
   const providerRef = useRef({
-    color, render, updatePositionFromKeyState
+    color, render, updatePositionFromKeyState, getPosition
   });
 
   useEffect(function setPositionRefOnMount() {
     positionRef.current = positionProps || { x: 20, y: 40 }
   }, []);
-
-  useEffect(function updateProviderRefOnStateChange() {
-    providerRef.current = { ...providerRef.current, position: positionRef.current };
-  }, [positionRef]);
 
   return (
     <PlayerContext.Provider value={providerRef.current}>

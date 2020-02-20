@@ -3,6 +3,8 @@ import keycode from 'keycode';
 
 import KeyboardContext from '../../contexts/KeyboardContext';
 
+import './Keyboard.scss';
+
 const Keyboard = (props) => {
 
   const {
@@ -34,6 +36,7 @@ const Keyboard = (props) => {
 
   return (
     <div
+      className="keyboard-capture"
       onKeyDown={appKeyDownEventHandler}
       onKeyUp={appKeyUpEventHandler}
       tabIndex="0"
