@@ -2,11 +2,6 @@ var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 var socket = io();
 
-var movedx = 0;
-var movedy = 0;
-
-var ballx = canvas.width/2;
-var bally = canvas.height/2;
 
 var ballRadius = 10;
 
@@ -15,9 +10,12 @@ var leftPressed = false;
 var upPressed = false;
 var downPressed = false;
 
-var rectangles = [];
-var players = [];
 var gridSize = 40;
+
+var publicEntiesC = {
+  rectangles : [],
+  players : []
+}
 
 var arrayPOS;
 
@@ -28,8 +26,8 @@ var state = {
   downPressed : false
 };
 
-socket.on('playerInfo', function(playersS){
-   players = playersS;
+socket.on('playerInfo', function(publicEnties){
+   publicEntiesC = publicEnties;
    draw();
  });
 
@@ -41,14 +39,14 @@ socket.on('playerArrayPOS', function(result){
  function drawGrid(){
     ctx.beginPath();
     ctx.translate(0.5, 0.5);
-    for(var x = 0 - (players[arrayPOS].movedx % gridSize); x < canvas.width; x += gridSize){
+    for(var x = 0 - (publicEntiesC.players[arrayPOS].x % gridSize); x < canvas.width; x += gridSize){
       ctx.moveTo(x, 0);
       ctx.lineTo(x, canvas.clientHeight);
       ctx.strokeStyle = '#ffffff';
       ctx.stroke();
 
     }    
-    for(var y = 0 - (players[arrayPOS].movedy % gridSize); y < canvas.height; y += gridSize){
+    for(var y = 0 - (publicEntiesC.players[arrayPOS].y % gridSize); y < canvas.height; y += gridSize){
       ctx.moveTo(0, y);
       ctx.lineTo(canvas.width, y);
       ctx.strokeStyle = '#ffffff';
@@ -60,9 +58,9 @@ socket.on('playerArrayPOS', function(result){
 
 //client
 function drawPlayers(){
-  for(var i = 0; i < players.length; i++){
+  for(var i = 0; i < publicEntiesC.players.length; i++){
     ctx.beginPath();
-    ctx.arc(players[i].x - players[arrayPOS].movedx, players[i].y - players[arrayPOS].movedy, ballRadius, 0, Math.PI*2);
+    ctx.arc(publicEntiesC.players[i].x - publicEntiesC.players[arrayPOS].x + canvas.width/2, publicEntiesC.players[i].y - publicEntiesC.players[arrayPOS].y + canvas.height/2, ballRadius, 0, Math.PI*2);
     ctx.fillStyle = "#0095DD";
     ctx.fill();
     ctx.closePath();
@@ -70,23 +68,15 @@ function drawPlayers(){
 
 }
 
-function drawBall(){
-	ctx.beginPath();
-	ctx.arc(ballx, bally, ballRadius, 0, Math.PI*2);
-	ctx.fillStyle = "#0095DD";
-	ctx.fill();
-	ctx.closePath();
-
-}
 
 socket.on('rectangleInfo', function(rectanglesS){
-  rectangles = rectanglesS;
+  publicEntiesC.rectangles = rectanglesS;
 });
 //possibly needs changing
 function drawRect(){
-	for(var i = 0; i < rectangles.length; i++){
+	for(var i = 0; i < publicEntiesC.rectangles.length; i++){
 		ctx.beginPath();
-		ctx.rect(rectangles[i].recx * gridSize - players[arrayPOS].movedx, rectangles[i].recy * gridSize - players[arrayPOS].movedy, gridSize, gridSize);
+		ctx.rect(publicEntiesC.rectangles[i].recx * gridSize - publicEntiesC.players[arrayPOS].x + 320, publicEntiesC.rectangles[i].recy * gridSize - publicEntiesC.players[arrayPOS].y + 240, gridSize, gridSize);
 		ctx.fillStyle = "#FF0000";
 		ctx.fill();
 		ctx.closePath();
@@ -101,9 +91,8 @@ function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawGrid();
 	drawRect();
-	drawBall();
   drawPlayers();
-	document.getElementById("cords").innerHTML = "X= " + players[arrayPOS].x + "Y= " + players[arrayPOS].y;
+	document.getElementById("cords").innerHTML = "X= " + publicEntiesC.players[arrayPOS].x + "Y= " + publicEntiesC.players[arrayPOS].y;
 }
 
 
