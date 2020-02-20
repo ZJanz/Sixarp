@@ -7,15 +7,16 @@ var io = require('socket.io')(http);
 
 var publicEnties ={
 	rectangles : [],
-	players : []
+	players : [],
+	borderRadius : 50
 }
 
 var playerIDs = [];
 
-for(var i = 0; i <= 9; i++){
+for(var i = 0; i <= 1000; i++){
 		publicEnties.rectangles.push({
-			recx : Math.floor(Math.random() * 16),
-			recy : Math.floor(Math.random() * 12)
+			recx : Math.floor(Math.random() * (publicEnties.borderRadius * 2)) - publicEnties.borderRadius,
+			recy : Math.floor(Math.random() * publicEnties.borderRadius * 2) - publicEnties.borderRadius
 		})
 	}
 
@@ -54,21 +55,21 @@ io.on('connection', function(socket){
 
 function move(){
 	for(i = 0; i < publicEnties.players.length; i++){
-		if (publicEnties.players[i].right === true){
+		if (publicEnties.players[i].right === true && publicEnties.players[i].x < publicEnties.borderRadius * 40){
 	  			publicEnties.players[i].x += 2;
 	  		}
 
-	  		if (publicEnties.players[i].left === true){
+	  		if (publicEnties.players[i].left === true && publicEnties.players[i].x > (Math.abs(publicEnties.borderRadius) * -1) * 40){
 	  			publicEnties.players[i].x -= 2;
 
 	  		}
 
-	  		if (publicEnties.players[i].up === true){
+	  		if (publicEnties.players[i].up === true && publicEnties.players[i].y > (Math.abs(publicEnties.borderRadius) * -1) * 40){
 	  			publicEnties.players[i].y -= 2;
 
 	  		}
 
-	  		if (publicEnties.players[i].down === true){
+	  		if (publicEnties.players[i].down === true && publicEnties.players[i].y < publicEnties.borderRadius * 40){
 	  			publicEnties.players[i].y += 2;
 
 	  		}
