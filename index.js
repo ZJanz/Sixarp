@@ -5,13 +5,15 @@ app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
+var publicEnties ={
+	rectangles : [],
+	players : []
+}
 
-var rectanglesS = [];
 var playerIDs = [];
-var playersS = [];
 
 for(var i = 0; i <= 9; i++){
-		rectanglesS.push({
+		publicEnties.rectangles.push({
 			recx : Math.floor(Math.random() * 16),
 			recy : Math.floor(Math.random() * 12)
 		})
@@ -25,13 +27,11 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
   	console.log(socket.id + " connected");
-  	io.to(`${socket.id}`).emit('playerArrayPOS', playersS.length);
+  	io.to(`${socket.id}`).emit('playerArrayPOS', publicEnties.players.length);
   	playerIDs.push(socket.id);
-  	playersS.push({
-  		x : 320,
-  		y : 240,
-  		movedx : 0,
-  		movedy : 0,
+  	publicEnties.players.push({
+  		x : 0,
+  		y : 0,
   		right : false,
   		left : false,
   		up : false,
@@ -39,46 +39,37 @@ io.on('connection', function(socket){
 
   	});
   	socket.on('movement', function(state){
-  		playersS[playerIDs.indexOf(socket.id)].right = state.rightPressed;
-  		playersS[playerIDs.indexOf(socket.id)].left = state.leftPressed;
-  		playersS[playerIDs.indexOf(socket.id)].up = state.upPressed;
-  		playersS[playerIDs.indexOf(socket.id)].down = state.downPressed;
+  		publicEnties.players[playerIDs.indexOf(socket.id)].right = state.rightPressed;
+  		publicEnties.players[playerIDs.indexOf(socket.id)].left = state.leftPressed;
+  		publicEnties.players[playerIDs.indexOf(socket.id)].up = state.upPressed;
+  		publicEnties.players[playerIDs.indexOf(socket.id)].down = state.downPressed;
 
   	} )
-  	io.emit('rectangleInfo', rectanglesS);
+  	io.emit('rectangleInfo', publicEnties.rectanglesS);
   	socket.on('disconnect', function(){
     	console.log(socket.id + ' disconnected');
 	})
 
 });
 
-// function ping() {
-// 	move()
-// 	io.emit('playerInfo', playersS)
-// }
-
 function move(){
-	for(i = 0; i < playersS.length; i++){
-		if (playersS[i].right === true){
-	  			playersS[i].x += 2;
-	  			playersS[i].movedx += 2;
+	for(i = 0; i < publicEnties.players.length; i++){
+		if (publicEnties.players[i].right === true){
+	  			publicEnties.players[i].x += 2;
 	  		}
 
-	  		if (playersS[i].left === true){
-	  			playersS[i].x -= 2;
-	  			playersS[i].movedx -= 2;
-
-	  		}
-
-	  		if (playersS[i].up === true){
-	  			playersS[i].y -= 2;
-	  			playersS[i].movedy -= 2;
+	  		if (publicEnties.players[i].left === true){
+	  			publicEnties.players[i].x -= 2;
 
 	  		}
 
-	  		if (playersS[i].down === true){
-	  			playersS[i].y += 2;
-	  			playersS[i].movedy += 2;
+	  		if (publicEnties.players[i].up === true){
+	  			publicEnties.players[i].y -= 2;
+
+	  		}
+
+	  		if (publicEnties.players[i].down === true){
+	  			publicEnties.players[i].y += 2;
 
 	  		}
 	  	}
@@ -86,7 +77,7 @@ function move(){
 
 function ping(){
 	move();
-	io.emit('playerInfo', playersS);
+	io.emit('playerInfo', publicEnties);
 }
 
 var interval = setInterval(ping, 10);
