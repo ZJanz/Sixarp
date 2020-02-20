@@ -12,6 +12,8 @@ var downPressed = false;
 
 var gridSize = 40;
 
+var nonconEntiesC;
+
 var publicEntiesC = {
   rectangles : [],
   players : []
@@ -26,6 +28,10 @@ var state = {
   downPressed : false
 };
 
+socket.on('noncon', function(nonconEnties){
+  nonconEntiesC = nonconEnties;
+});
+
 socket.on('playerInfo', function(publicEnties){
    publicEntiesC = publicEnties;
    draw();
@@ -33,7 +39,7 @@ socket.on('playerInfo', function(publicEnties){
 
 socket.on('playerArrayPOS', function(result){
   arrayPOS = result;
-})
+});
 
 //client
  function drawGrid(){
@@ -72,17 +78,21 @@ function drawPlayers(){
 socket.on('rectangleInfo', function(rectanglesS){
   publicEntiesC.rectangles = rectanglesS;
 });
-//possibly needs changing
-function drawRect(){
-	for(var i = 0; i < publicEntiesC.rectangles.length; i++){
-		ctx.beginPath();
-		ctx.rect(publicEntiesC.rectangles[i].recx * gridSize - publicEntiesC.players[arrayPOS].x + 320, publicEntiesC.rectangles[i].recy * gridSize - publicEntiesC.players[arrayPOS].y + 240, gridSize, gridSize);
-		ctx.fillStyle = "#FF0000";
-		ctx.fill();
-		ctx.closePath();
-	}
-}
 
+
+function drawBlocks(){
+  for(var x = 0; x < nonconEntiesC.gridSpot.length; x++){
+    for(var y = 0; y < nonconEntiesC.gridSpot[x].length; y++){
+      if((x * gridSize) - (nonconEntiesC.borderRadius * gridSize) <= (publicEntiesC.players[arrayPOS].x + 320) && x * gridSize - nonconEntiesC.borderRadius * gridSize >= (publicEntiesC.players[arrayPOS].x - 360) && y * gridSize - nonconEntiesC.borderRadius * gridSize <= (publicEntiesC.players[arrayPOS].y + 240) && y * gridSize - nonconEntiesC.borderRadius * gridSize >= (publicEntiesC.players[arrayPOS].y - 280)) {
+          ctx.beginPath();
+          ctx.rect(x * gridSize - publicEntiesC.players[arrayPOS].x + 320 - (nonconEntiesC.borderRadius * gridSize) , y * gridSize - publicEntiesC.players[arrayPOS].y + 240 - (nonconEntiesC.borderRadius * gridSize), gridSize, gridSize);
+          ctx.fillStyle = "rgb(" + nonconEntiesC.gridSpot[x][y].r + ", " +nonconEntiesC.gridSpot[x][y].g + ", " + nonconEntiesC.gridSpot[x][y].b + ")";
+          ctx.fill();
+          ctx.closePath();
+        }
+      }
+    }
+  }
 
 
 
@@ -90,7 +100,7 @@ function drawRect(){
 function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawGrid();
-	drawRect();
+  drawBlocks();
   drawPlayers();
 	document.getElementById("cords").innerHTML = "X= " + publicEntiesC.players[arrayPOS].x + "Y= " + publicEntiesC.players[arrayPOS].y;
 }
@@ -100,7 +110,7 @@ function draw() {
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 
-//client needs to emit
+
 function keyDownHandler(e) {
     if(e.key == "Right" || e.key == "ArrowRight") {
         state.rightPressed = true;
