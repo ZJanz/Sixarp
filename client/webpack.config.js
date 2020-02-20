@@ -47,7 +47,7 @@ module.exports = {
   plugins: ((env) => {
     const ret = [
       new CopyWebpackPlugin([
-        { from: 'src/static', to: '.' }
+        { from: 'client/src/static', to: '.' }
       ]),
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, './src/static/index.html'),
