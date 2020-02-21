@@ -6,7 +6,7 @@ var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
 var nonconEnties = {
-	rectangles : [],
+	// rectangles : [],
 	borderRadius : 50,
 	gridSpot : []
 }
@@ -22,9 +22,9 @@ for(var x = 0; x < nonconEnties.borderRadius * 2; x++){
 		[]	
 	)
 	for(var y = 0; y < nonconEnties.borderRadius * 2; y++){
-		var red = Math.floor(Math.random() * 255);
-        var green = Math.floor(Math.random() * 255);
-        var blue = Math.floor(Math.random() * 255);
+		var red = null;
+        var green = null;
+        var blue = null;
 
 
 		nonconEnties.gridSpot[x].push({
@@ -39,20 +39,31 @@ for(var x = 0; x < nonconEnties.borderRadius * 2; x++){
 
 }
 
-// for(var i = 0; i < borderRadius * 2; i++){
-// 	publicEnties.gridSpot.push({
-// 		[]
-// 	})
-// }
+function growTree(){
+	if (Math.random() < 0.5){
+		var randX = Math.floor(Math.random() * 100);
+		var randY = Math.floor(Math.random() * 100);
+
+		nonconEnties.gridSpot[randX][randY].tree = true;
+		nonconEnties.gridSpot[randX][randY].r = 0;
+		nonconEnties.gridSpot[randX][randY].g = 255;
+		nonconEnties.gridSpot[randX][randY].b = 0;
+
+		var info = {
+			x: randX,
+			y: randY
+		}
+
+		io.emit('tree', info);
+	}
+
+
+}
+
+
 
 var playerIDs = [];
 
-for(var i = 0; i <= 1000; i++){
-		nonconEnties.rectangles.push({
-			recx : Math.floor(Math.random() * (nonconEnties.borderRadius * 2)) - nonconEnties.borderRadius,
-			recy : Math.floor(Math.random() * (nonconEnties.borderRadius * 2)) - nonconEnties.borderRadius
-		})
-	}
 
 app.use(express.static('public')); //used to get files from public
 
@@ -81,7 +92,7 @@ io.on('connection', function(socket){
   		publicEnties.players[playerIDs.indexOf(socket.id)].down = state.downPressed;
 
   	} )
-  	io.emit('rectangleInfo', nonconEnties.rectanglesS);
+  	// io.emit('rectangleInfo', nonconEnties.rectanglesS);
   	socket.on('disconnect', function(){
     	console.log(socket.id + ' disconnected');
 	})
@@ -113,6 +124,7 @@ function move(){
 
 function ping(){
 	move();
+	growTree();
 	io.emit('playerInfo', publicEnties);
 }
 
