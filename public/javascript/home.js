@@ -32,6 +32,13 @@ socket.on('noncon', function(nonconEnties){
   nonconEntiesC = nonconEnties;
 });
 
+socket.on('tree', function(info){
+  nonconEntiesC.gridSpot[info.x][info.y].r = 0;
+  nonconEntiesC.gridSpot[info.x][info.y].g = 255;
+  nonconEntiesC.gridSpot[info.x][info.y].b = 0;
+  nonconEntiesC.gridSpot[info.x][info.y].tree = true;
+})
+
 socket.on('playerInfo', function(publicEnties){
    publicEntiesC = publicEnties;
    draw();
@@ -75,20 +82,25 @@ function drawPlayers(){
 }
 
 
-socket.on('rectangleInfo', function(rectanglesS){
-  publicEntiesC.rectangles = rectanglesS;
-});
 
+function render(x, y){
+  if((x * gridSize) - (nonconEntiesC.borderRadius * gridSize) <= (publicEntiesC.players[arrayPOS].x + 320) && x * gridSize - nonconEntiesC.borderRadius * gridSize >= (publicEntiesC.players[arrayPOS].x - 360) && y * gridSize - nonconEntiesC.borderRadius * gridSize <= (publicEntiesC.players[arrayPOS].y + 240) && y * gridSize - nonconEntiesC.borderRadius * gridSize >= (publicEntiesC.players[arrayPOS].y - 280)){
+    return true;
+  }
+  else {return false};
+}
 
 function drawBlocks(){
   for(var x = 0; x < nonconEntiesC.gridSpot.length; x++){
     for(var y = 0; y < nonconEntiesC.gridSpot[x].length; y++){
-      if((x * gridSize) - (nonconEntiesC.borderRadius * gridSize) <= (publicEntiesC.players[arrayPOS].x + 320) && x * gridSize - nonconEntiesC.borderRadius * gridSize >= (publicEntiesC.players[arrayPOS].x - 360) && y * gridSize - nonconEntiesC.borderRadius * gridSize <= (publicEntiesC.players[arrayPOS].y + 240) && y * gridSize - nonconEntiesC.borderRadius * gridSize >= (publicEntiesC.players[arrayPOS].y - 280)) {
-          ctx.beginPath();
-          ctx.rect(x * gridSize - publicEntiesC.players[arrayPOS].x + 320 - (nonconEntiesC.borderRadius * gridSize) , y * gridSize - publicEntiesC.players[arrayPOS].y + 240 - (nonconEntiesC.borderRadius * gridSize), gridSize, gridSize);
-          ctx.fillStyle = "rgb(" + nonconEntiesC.gridSpot[x][y].r + ", " +nonconEntiesC.gridSpot[x][y].g + ", " + nonconEntiesC.gridSpot[x][y].b + ")";
-          ctx.fill();
-          ctx.closePath();
+      if(render(x, y) === true) {
+        if(nonconEntiesC.gridSpot[x][y].r != null){
+            ctx.beginPath();
+            ctx.rect(x * gridSize - publicEntiesC.players[arrayPOS].x + 320 - (nonconEntiesC.borderRadius * gridSize) , y * gridSize - publicEntiesC.players[arrayPOS].y + 240 - (nonconEntiesC.borderRadius * gridSize), gridSize, gridSize);
+            ctx.fillStyle = "rgb(" + nonconEntiesC.gridSpot[x][y].r + ", " +nonconEntiesC.gridSpot[x][y].g + ", " + nonconEntiesC.gridSpot[x][y].b + ")";
+            ctx.fill();
+            ctx.closePath();
+          }
         }
       }
     }
