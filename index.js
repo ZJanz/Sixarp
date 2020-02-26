@@ -1,136 +1,188 @@
-//index.js
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
+var socket = io();
 
-var express = require('express');
-app = express();
-var http = require('http').createServer(app);
-var io = require('socket.io')(http);
 
-var nonconEnties = {
-	// rectangles : [],
-	borderRadius : 50,
-	gridSpot : []
+var ballRadius = 10;
+
+var rightPressed = false;
+var leftPressed = false;
+var upPressed = false;
+var downPressed = false;
+
+var gridSize = 40;
+
+var nonconEntiesC = {
+  trees : []
 }
 
-var publicEnties ={
-	players : []
+var publicEntiesC = {
+  players : []
 }
 
-var order = 0;
+var arrayPOS;
 
-for(var x = 0; x < nonconEnties.borderRadius * 2; x++){
-	nonconEnties.gridSpot.push(
-		[]	
-	)
-	for(var y = 0; y < nonconEnties.borderRadius * 2; y++){
-		var red = null;
-        var green = null;
-        var blue = null;
+var state = {
+  rightPressed : false,
+  leftPressed : false,
+  upPressed : false,
+  downPressed : false
+};
 
+// socket.on('tree', function(info){
+//   nonconEntiesC.gridSpot[info.x][info.y].r = 0;
+//   nonconEntiesC.gridSpot[info.x][info.y].g = 255;
+//   nonconEntiesC.gridSpot[info.x][info.y].b = 0;
+//   nonconEntiesC.gridSpot[info.x][info.y].tree = true;
+// })
 
-		nonconEnties.gridSpot[x].push({
-			r : red,
-			g : green,
-			b : blue,
-			spot : order
-		})
-
-		order++
-	}
-
-}
-
-function growTree(){
-	if (Math.random() < 0.5){
-		var randX = Math.floor(Math.random() * 100);
-		var randY = Math.floor(Math.random() * 100);
-
-		nonconEnties.gridSpot[randX][randY].tree = true;
-		nonconEnties.gridSpot[randX][randY].r = 0;
-		nonconEnties.gridSpot[randX][randY].g = 255;
-		nonconEnties.gridSpot[randX][randY].b = 0;
-
-		var info = {
-			x: randX,
-			y: randY
-		}
-
-		io.emit('tree', info);
-	}
-
-
-}
-
-
-
-var playerIDs = [];
-
-
-app.use(express.static('public')); //used to get files from public
-
-app.get('/', function(req, res){
-  res.render("index.ejs");
+socket.on('treeInfo', function(trees){
+  nonconEntiesC.trees = trees;
 });
 
-io.on('connection', function(socket){
-  	console.log(socket.id + " connected");
-  	io.emit('noncon', nonconEnties);
-  	io.to(`${socket.id}`).emit('playerArrayPOS', publicEnties.players.length);
-  	playerIDs.push(socket.id);
-  	publicEnties.players.push({
-  		x : 0,
-  		y : 0,
-  		right : false,
-  		left : false,
-  		up : false,
-  		down : false
+socket.on('playerInfo', function(publicEnties){
+   publicEntiesC = publicEnties;
+   draw();
+ });
 
-  	});
-  	socket.on('movement', function(state){
-  		publicEnties.players[playerIDs.indexOf(socket.id)].right = state.rightPressed;
-  		publicEnties.players[playerIDs.indexOf(socket.id)].left = state.leftPressed;
-  		publicEnties.players[playerIDs.indexOf(socket.id)].up = state.upPressed;
-  		publicEnties.players[playerIDs.indexOf(socket.id)].down = state.downPressed;
-
-  	} )
-  	// io.emit('rectangleInfo', nonconEnties.rectanglesS);
-  	socket.on('disconnect', function(){
-    	console.log(socket.id + ' disconnected');
-	})
-
+socket.on('playerArrayPOS', function(result){
+  arrayPOS = result;
 });
 
-function move(){
-	for(i = 0; i < publicEnties.players.length; i++){
-		if (publicEnties.players[i].right === true && publicEnties.players[i].x < nonconEnties.borderRadius * 40){
-	  			publicEnties.players[i].x += 2;
-	  		}
 
-	  		if (publicEnties.players[i].left === true && publicEnties.players[i].x > (Math.abs(nonconEnties.borderRadius) * -1) * 40){
-	  			publicEnties.players[i].x -= 2;
 
-	  		}
+//client
+ function drawGrid(){
+    ctx.beginPath();
+    ctx.translate(0.5, 0.5);
+    for(var x = 0 - (publicEntiesC.players[arrayPOS].x % gridSize); x < canvas.width; x += gridSize){
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvas.clientHeight);
+      ctx.strokeStyle = '#ffffff';
+      ctx.stroke();
 
-	  		if (publicEnties.players[i].up === true && publicEnties.players[i].y > (Math.abs(nonconEnties.borderRadius) * -1) * 40){
-	  			publicEnties.players[i].y -= 2;
+    }    
+    for(var y = 0 - (publicEntiesC.players[arrayPOS].y % gridSize); y < canvas.height; y += gridSize){
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y);
+      ctx.strokeStyle = '#ffffff';
+      ctx.stroke();
+    }    
+    ctx.translate(-0.5, -0.5);
+  }
 
-	  		}
 
-	  		if (publicEnties.players[i].down === true && publicEnties.players[i].y < nonconEnties.borderRadius * 40){
-	  			publicEnties.players[i].y += 2;
+//client
+function drawPlayers(){
+  for(var i = 0; i < publicEntiesC.players.length; i++){
+    ctx.beginPath();
+    ctx.arc(publicEntiesC.players[i].x - publicEntiesC.players[arrayPOS].x + canvas.width/2, publicEntiesC.players[i].y - publicEntiesC.players[arrayPOS].y + canvas.height/2, ballRadius, 0, Math.PI*2);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+  }
 
-	  		}
-	  	}
 }
 
-function ping(){
-	move();
-	growTree();
-	io.emit('playerInfo', publicEnties);
+
+
+function render(x, y){
+  if(x <= publicEntiesC.players[arrayPOS].gridX + 8 && x >= publicEntiesC.players[arrayPOS].gridX - 8){
+    if(y <= publicEntiesC.players[arrayPOS].gridY + 6 && y >= publicEntiesC.players[arrayPOS].gridY - 6){
+      return true;
+    }
+  }
+  else {return false}
 }
 
-var interval = setInterval(ping, 10);
+
+function drawTrees(){
+  for(var i = 0; i < nonconEntiesC.trees.length; i++){
+    if(render(nonconEntiesC.trees[i].gridX, nonconEntiesC.trees[i].gridY) === true) {
+      ctx.beginPath();
+      ctx.rect(nonconEntiesC.trees[i].gridX * gridSize - publicEntiesC.players[arrayPOS].x + 320, nonconEntiesC.trees[i].gridY * gridSize - publicEntiesC.players[arrayPOS].y + 240, gridSize, gridSize)
+      ctx.fillStyle = "rgb(0, 255, 0)";
+      ctx.fill();
+      ctx.closePath();
+    }
+  }
+}
+
+// function drawBlocks(){
+//   for(var x = 0; x < nonconEntiesC.gridSpot.length; x++){
+//     for(var y = 0; y < nonconEntiesC.gridSpot[x].length; y++){
+//       if(render(x, y) === true) {
+//         if(nonconEntiesC.gridSpot[x][y].r != null){
+//             ctx.beginPath();
+//             ctx.rect(x * gridSize - publicEntiesC.players[arrayPOS].x + 320 - (nonconEntiesC.borderRadius * gridSize) , y * gridSize - publicEntiesC.players[arrayPOS].y + 240 - (nonconEntiesC.borderRadius * gridSize), gridSize, gridSize);
+//             ctx.fillStyle = "rgb(" + nonconEntiesC.gridSpot[x][y].r + ", " +nonconEntiesC.gridSpot[x][y].g + ", " + nonconEntiesC.gridSpot[x][y].b + ")";
+//             ctx.fill();
+//             ctx.closePath();
+//           }
+//         }
+//       }
+//     }
+//   }
+
+// function drawTrees(){
+//   for(var i = 0; i < nonconEntiesC.trees.length; i++){
+    
+//   }
+// }
 
 
-http.listen(3000, function(){
-  console.log('listening on *:3000');
-});
+
+
+//client
+function draw() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	drawGrid();
+  drawTrees();
+  drawPlayers();
+	document.getElementById("cords").innerHTML = "X= " + publicEntiesC.players[arrayPOS].x + "Y= " + publicEntiesC.players[arrayPOS].y;
+}
+
+
+
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+
+function keyDownHandler(e) {
+    if(e.key == "Right" || e.key == "ArrowRight") {
+        state.rightPressed = true;
+        socket.emit('movement', state);
+    }
+    if(e.key == "Left" || e.key == "ArrowLeft") {
+        state.leftPressed = true;
+       socket.emit('movement', state);
+    }
+    if(e.key == "Down" || e.key == "ArrowDown") {
+        state.downPressed = true;
+       socket.emit('movement', state);
+    }
+    if(e.key == "Up" || e.key == "ArrowUp") {
+        state.upPressed = true;
+        socket.emit('movement', state);
+    }
+}
+
+function keyUpHandler(e) {
+    if(e.key == "Right" || e.key == "ArrowRight") {
+        state.rightPressed = false;
+        socket.emit('movement', state);
+    }
+    if(e.key == "Left" || e.key == "ArrowLeft") {
+        state.leftPressed = false;
+        socket.emit('movement', state);
+    }
+    if(e.key == "Down" || e.key == "ArrowDown") {
+        state.downPressed = false;
+        socket.emit('movement', state);
+    }
+    if(e.key == "Up" || e.key == "ArrowUp") {
+        state.upPressed = false;
+        socket.emit('movement', state);
+    }
+}
+
