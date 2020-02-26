@@ -12,15 +12,11 @@ var downPressed = false;
 
 var gridSize = 40;
 
-var nonconEntiesC = {
-  trees : []
-}
+var trees = [];
 
-var publicEntiesC = {
-  players : []
-}
+var players = [];
 
-var arrayPOS;
+var ID;
 
 var state = {
   rightPressed : false,
@@ -36,17 +32,17 @@ var state = {
 //   nonconEntiesC.gridSpot[info.x][info.y].tree = true;
 // })
 
-socket.on('treeInfo', function(trees){
-  nonconEntiesC.trees = trees;
+socket.on('treeInfo', function(treesInfo){
+  trees = treesInfo;
 });
 
-socket.on('playerInfo', function(publicEnties){
-   publicEntiesC = publicEnties;
+socket.on('playerInfo', function(playerList){
+   players = playerList;
    draw();
  });
 
-socket.on('playerArrayPOS', function(result){
-  arrayPOS = result;
+socket.on('ID', function(result){
+  ID = result;
 });
 
 
@@ -55,14 +51,14 @@ socket.on('playerArrayPOS', function(result){
  function drawGrid(){
     ctx.beginPath();
     ctx.translate(0.5, 0.5);
-    for(var x = 0 - (publicEntiesC.players[arrayPOS].x % gridSize); x < canvas.width; x += gridSize){
+    for(var x = 0 - (players[currentPlayer].x % gridSize); x < canvas.width; x += gridSize){
       ctx.moveTo(x, 0);
       ctx.lineTo(x, canvas.clientHeight);
       ctx.strokeStyle = '#ffffff';
       ctx.stroke();
 
     }    
-    for(var y = 0 - (publicEntiesC.players[arrayPOS].y % gridSize); y < canvas.height; y += gridSize){
+    for(var y = 0 - (players[currentPlayer].y % gridSize); y < canvas.height; y += gridSize){
       ctx.moveTo(0, y);
       ctx.lineTo(canvas.width, y);
       ctx.strokeStyle = '#ffffff';
@@ -72,11 +68,27 @@ socket.on('playerArrayPOS', function(result){
   }
 
 
+var currentPlayer;
+function getFocus(){
+  for(var i = 0; i < players.length; i++){
+    if (players[i].ID === ID){
+      currentPlayer = i;
+      break;
+    }
+  }
+}
+
 //client
 function drawPlayers(){
-  for(var i = 0; i < publicEntiesC.players.length; i++){
+  for(var i = 0; i < players.length; i++){
     ctx.beginPath();
-    ctx.arc(publicEntiesC.players[i].x - publicEntiesC.players[arrayPOS].x + canvas.width/2, publicEntiesC.players[i].y - publicEntiesC.players[arrayPOS].y + canvas.height/2, ballRadius, 0, Math.PI*2);
+    ctx.rect(players[i].gridX * gridSize - players[currentPlayer].x + 320, players[i].gridY * gridSize - players[currentPlayer].y + 240, gridSize, gridSize);
+    ctx.fillStyle = "#FF0000";
+    ctx.fill();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.arc(players[i].x - players[currentPlayer].x + canvas.width/2, players[i].y - players[currentPlayer].y + canvas.height/2, ballRadius, 0, Math.PI*2);
     ctx.fillStyle = "#0095DD";
     ctx.fill();
     ctx.closePath();
@@ -87,8 +99,8 @@ function drawPlayers(){
 
 
 function render(x, y){
-  if(x <= publicEntiesC.players[arrayPOS].gridX + 8 && x >= publicEntiesC.players[arrayPOS].gridX - 8){
-    if(y <= publicEntiesC.players[arrayPOS].gridY + 6 && y >= publicEntiesC.players[arrayPOS].gridY - 6){
+  if(x <= players[ID].gridX + 8 && x >= players[ID].gridX - 8){
+    if(y <= players[ID].gridY + 6 && y >= players[ID].gridY - 6){
       return true;
     }
   }
@@ -97,14 +109,12 @@ function render(x, y){
 
 
 function drawTrees(){
-  for(var i = 0; i < nonconEntiesC.trees.length; i++){
-    if(render(nonconEntiesC.trees[i].gridX, nonconEntiesC.trees[i].gridY) === true) {
+  for(var i = 0; i < trees.length; i++){
       ctx.beginPath();
-      ctx.rect(nonconEntiesC.trees[i].gridX * gridSize - publicEntiesC.players[arrayPOS].x + 320, nonconEntiesC.trees[i].gridY * gridSize - publicEntiesC.players[arrayPOS].y + 240, gridSize, gridSize)
+      ctx.rect(trees[i].gridX * gridSize - players[currentPlayer].x + 320, trees[i].gridY * gridSize - players[currentPlayer].y + 240, gridSize, gridSize)
       ctx.fillStyle = "rgb(0, 255, 0)";
       ctx.fill();
       ctx.closePath();
-    }
   }
 }
 
@@ -136,10 +146,11 @@ function drawTrees(){
 //client
 function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+  getFocus();
 	drawGrid();
   drawTrees();
   drawPlayers();
-	document.getElementById("cords").innerHTML = "X= " + publicEntiesC.players[arrayPOS].x + "Y= " + publicEntiesC.players[arrayPOS].y;
+	document.getElementById("cords").innerHTML = "X= " + players[currentPlayer].x + "Y= " + players[currentPlayer].y;
 }
 
 
