@@ -12,10 +12,11 @@ var downPressed = false;
 
 var gridSize = 40;
 
-var nonconEntiesC;
+var nonconEntiesC = {
+  trees : []
+}
 
 var publicEntiesC = {
-  rectangles : [],
   players : []
 }
 
@@ -28,16 +29,16 @@ var state = {
   downPressed : false
 };
 
-socket.on('noncon', function(nonconEnties){
-  nonconEntiesC = nonconEnties;
-});
+// socket.on('tree', function(info){
+//   nonconEntiesC.gridSpot[info.x][info.y].r = 0;
+//   nonconEntiesC.gridSpot[info.x][info.y].g = 255;
+//   nonconEntiesC.gridSpot[info.x][info.y].b = 0;
+//   nonconEntiesC.gridSpot[info.x][info.y].tree = true;
+// })
 
-socket.on('tree', function(info){
-  nonconEntiesC.gridSpot[info.x][info.y].r = 0;
-  nonconEntiesC.gridSpot[info.x][info.y].g = 255;
-  nonconEntiesC.gridSpot[info.x][info.y].b = 0;
-  nonconEntiesC.gridSpot[info.x][info.y].tree = true;
-})
+socket.on('treeInfo', function(trees){
+  nonconEntiesC.trees = trees;
+});
 
 socket.on('playerInfo', function(publicEnties){
    publicEntiesC = publicEnties;
@@ -47,6 +48,8 @@ socket.on('playerInfo', function(publicEnties){
 socket.on('playerArrayPOS', function(result){
   arrayPOS = result;
 });
+
+
 
 //client
  function drawGrid(){
@@ -84,27 +87,49 @@ function drawPlayers(){
 
 
 function render(x, y){
-  if((x * gridSize) - (nonconEntiesC.borderRadius * gridSize) <= (publicEntiesC.players[arrayPOS].x + 320) && x * gridSize - nonconEntiesC.borderRadius * gridSize >= (publicEntiesC.players[arrayPOS].x - 360) && y * gridSize - nonconEntiesC.borderRadius * gridSize <= (publicEntiesC.players[arrayPOS].y + 240) && y * gridSize - nonconEntiesC.borderRadius * gridSize >= (publicEntiesC.players[arrayPOS].y - 280)){
-    return true;
-  }
-  else {return false};
-}
-
-function drawBlocks(){
-  for(var x = 0; x < nonconEntiesC.gridSpot.length; x++){
-    for(var y = 0; y < nonconEntiesC.gridSpot[x].length; y++){
-      if(render(x, y) === true) {
-        if(nonconEntiesC.gridSpot[x][y].r != null){
-            ctx.beginPath();
-            ctx.rect(x * gridSize - publicEntiesC.players[arrayPOS].x + 320 - (nonconEntiesC.borderRadius * gridSize) , y * gridSize - publicEntiesC.players[arrayPOS].y + 240 - (nonconEntiesC.borderRadius * gridSize), gridSize, gridSize);
-            ctx.fillStyle = "rgb(" + nonconEntiesC.gridSpot[x][y].r + ", " +nonconEntiesC.gridSpot[x][y].g + ", " + nonconEntiesC.gridSpot[x][y].b + ")";
-            ctx.fill();
-            ctx.closePath();
-          }
-        }
-      }
+  if(x <= publicEntiesC.players[arrayPOS].gridX + 8 && x >= publicEntiesC.players[arrayPOS].gridX - 8){
+    if(y <= publicEntiesC.players[arrayPOS].gridY + 6 && y >= publicEntiesC.players[arrayPOS].gridY - 6){
+      return true;
     }
   }
+  else {return false}
+}
+
+
+function drawTrees(){
+  for(var i = 0; i < nonconEntiesC.trees.length; i++){
+    if(render(nonconEntiesC.trees[i].gridX, nonconEntiesC.trees[i].gridY) === true) {
+      ctx.beginPath();
+      ctx.rect(nonconEntiesC.trees[i].gridX * gridSize - publicEntiesC.players[arrayPOS].x + 320, nonconEntiesC.trees[i].gridY * gridSize - publicEntiesC.players[arrayPOS].y + 240, gridSize, gridSize)
+      ctx.fillStyle = "rgb(0, 255, 0)";
+      ctx.fill();
+      ctx.closePath();
+    }
+  }
+}
+
+// function drawBlocks(){
+//   for(var x = 0; x < nonconEntiesC.gridSpot.length; x++){
+//     for(var y = 0; y < nonconEntiesC.gridSpot[x].length; y++){
+//       if(render(x, y) === true) {
+//         if(nonconEntiesC.gridSpot[x][y].r != null){
+//             ctx.beginPath();
+//             ctx.rect(x * gridSize - publicEntiesC.players[arrayPOS].x + 320 - (nonconEntiesC.borderRadius * gridSize) , y * gridSize - publicEntiesC.players[arrayPOS].y + 240 - (nonconEntiesC.borderRadius * gridSize), gridSize, gridSize);
+//             ctx.fillStyle = "rgb(" + nonconEntiesC.gridSpot[x][y].r + ", " +nonconEntiesC.gridSpot[x][y].g + ", " + nonconEntiesC.gridSpot[x][y].b + ")";
+//             ctx.fill();
+//             ctx.closePath();
+//           }
+//         }
+//       }
+//     }
+//   }
+
+// function drawTrees(){
+//   for(var i = 0; i < nonconEntiesC.trees.length; i++){
+    
+//   }
+// }
+
 
 
 
@@ -112,7 +137,7 @@ function drawBlocks(){
 function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawGrid();
-  drawBlocks();
+  drawTrees();
   drawPlayers();
 	document.getElementById("cords").innerHTML = "X= " + publicEntiesC.players[arrayPOS].x + "Y= " + publicEntiesC.players[arrayPOS].y;
 }
