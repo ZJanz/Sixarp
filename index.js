@@ -5,15 +5,10 @@ app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
-var nonconEnties = {
-	borderRadius : 50,
-	// gridSpot : [],
-	trees : []
-}
+var borderRadius = 50;
+var trees = [];
 
-var publicEnties ={
-	players : []
-}
+var players = [];
 
 // var order = 0;
 
@@ -40,20 +35,57 @@ var publicEnties ={
 // 	}
 
 // }
+function render(x, y){
+  if(x <= players[arrayPOS].gridX + 8 && x >= players[arrayPOS].gridX - 8){
+    if(y <= players[arrayPOS].gridY + 6 && y >= players[arrayPOS].gridY - 6){
+      return true;
+    }
+  }
+  else {return false}
+}
+
+function emitInfo(){
+	for(var i = 0; i < players.length; i++){
+		var wraper = {
+			treeList : [],
+			playerList : []
+		}
+		for(var n = 0; n < players.length; n++){
+			if(players[n].gridX <= players[i].gridX + 8 && players[n].gridX >= players[i].gridX - 8){
+    			if(players[n].gridY <= players[i].gridY + 6 && players[n].gridY >= players[i].gridY - 6){
+      				wraper.playerList.push(players[n]);
+    			}
+  			}
+		}
+
+
+		for(var n = 0; n < trees.length; n++){
+			if(trees[n].gridX <= players[i].gridX + 8 && trees[n].gridX >= players[i].gridX - 8){
+    			if(trees[n].gridY <= players[i].gridY + 6 && trees[n].gridY >= players[i].gridY - 6){
+      				wraper.treeList.push(trees[n]);
+    			}
+  			}
+		}
+
+		io.to(`${playerIDs[i]}`).emit('treeInfo', wraper.treeList);
+		io.to(`${playerIDs[i]}`).emit('playerInfo', wraper.playerList);
+
+	}
+}
 
 function growTree(){
-	if (Math.random() < 0.02){
-		var randX = (Math.floor(Math.random() * 100) - 50);
-		var randY = (Math.floor(Math.random() * 100) - 50);
+	if (Math.random() < 0.5){
+		var randX = (Math.floor(Math.random() * (borderRadius*2)) - borderRadius);
+		var randY = (Math.floor(Math.random() * (borderRadius*2)) - borderRadius);
 
 		var info = {
 			gridX: randX,
 			gridY: randY
 		}
 
-		nonconEnties.trees.push(info);
+		trees.push(info);
 
-		io.emit('treeInfo', nonconEnties.trees);
+		// io.emit('treeInfo', trees);
 	}
 
 
@@ -69,12 +101,13 @@ app.get('/', function(req, res){
   res.render("index.ejs");
 });
 
+
+var playerCount = 0;
+
 io.on('connection', function(socket){
   	console.log(socket.id + " connected");
-  	io.emit('noncon', nonconEnties);
-  	io.to(`${socket.id}`).emit('playerArrayPOS', publicEnties.players.length);
   	playerIDs.push(socket.id);
-  	publicEnties.players.push({
+  	players.push({
   		x : 0,
   		y : 0,
   		gridX : 0,
@@ -82,14 +115,16 @@ io.on('connection', function(socket){
   		right : false,
   		left : false,
   		up : false,
-  		down : false
-
+  		down : false,
+  		ID : playerCount
   	});
+  	io.to(`${socket.id}`).emit('ID', players[players.length-1].ID);
+  	playerCount++;
   	socket.on('movement', function(state){
-  		publicEnties.players[playerIDs.indexOf(socket.id)].right = state.rightPressed;
-  		publicEnties.players[playerIDs.indexOf(socket.id)].left = state.leftPressed;
-  		publicEnties.players[playerIDs.indexOf(socket.id)].up = state.upPressed;
-  		publicEnties.players[playerIDs.indexOf(socket.id)].down = state.downPressed;
+  		players[playerIDs.indexOf(socket.id)].right = state.rightPressed;
+  		players[playerIDs.indexOf(socket.id)].left = state.leftPressed;
+  		players[playerIDs.indexOf(socket.id)].up = state.upPressed;
+  		players[playerIDs.indexOf(socket.id)].down = state.downPressed;
 
   	} )
   	socket.on('disconnect', function(){
@@ -101,34 +136,34 @@ io.on('connection', function(socket){
 
 
 function move(){
-	for(var i = 0; i < publicEnties.players.length; i++){
-			if (publicEnties.players[i].right === true && publicEnties.players[i].x < nonconEnties.borderRadius * 40){
-	  			publicEnties.players[i].x += 2;
+	for(var i = 0; i < players.length; i++){
+			if (players[i].right === true && players[i].x < borderRadius * 40){
+	  			players[i].x += 2;
 	  		}
 
-	  		if (publicEnties.players[i].left === true && publicEnties.players[i].x > (Math.abs(nonconEnties.borderRadius) * -1) * 40){
-	  			publicEnties.players[i].x -= 2;
-
-	  		}
-
-	  		if (publicEnties.players[i].up === true && publicEnties.players[i].y > (Math.abs(nonconEnties.borderRadius) * -1) * 40){
-	  			publicEnties.players[i].y -= 2;
+	  		if (players[i].left === true && players[i].x > (Math.abs(borderRadius) * -1) * 40){
+	  			players[i].x -= 2;
 
 	  		}
 
-	  		if (publicEnties.players[i].down === true && publicEnties.players[i].y < nonconEnties.borderRadius * 40){
-	  			publicEnties.players[i].y += 2;
+	  		if (players[i].up === true && players[i].y > (Math.abs(borderRadius) * -1) * 40){
+	  			players[i].y -= 2;
 
 	  		}
-	  		publicEnties.players[i].gridX = Math.floor(publicEnties.players[i].x/40)
-	  		publicEnties.players[i].gridY = Math.floor(publicEnties.players[i].y/40)
+
+	  		if (players[i].down === true && players[i].y < borderRadius * 40){
+	  			players[i].y += 2;
+
+	  		}
+	  		players[i].gridX = Math.floor(players[i].x/40)
+	  		players[i].gridY = Math.floor(players[i].y/40)
 	  	}
 }
 
 function ping(){
 	move();
 	growTree();
-	io.emit('playerInfo', publicEnties);
+	emitInfo();
 }
 
 var interval = setInterval(ping, 10);
