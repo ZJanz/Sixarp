@@ -25,16 +25,10 @@ var state = {
   downPressed : false
 };
 
-// socket.on('tree', function(info){
-//   nonconEntiesC.gridSpot[info.x][info.y].r = 0;
-//   nonconEntiesC.gridSpot[info.x][info.y].g = 255;
-//   nonconEntiesC.gridSpot[info.x][info.y].b = 0;
-//   nonconEntiesC.gridSpot[info.x][info.y].tree = true;
-// })
 
-socket.on('treeInfo', function(treesInfo){
-  trees = treesInfo;
-});
+// socket.on('treeInfo', function(treesInfo){
+//   trees = treesInfo;
+// });
 
 socket.on('playerInfo', function(playerList){
    players = playerList;
@@ -45,6 +39,11 @@ socket.on('ID', function(result){
   ID = result;
 });
 
+var chunkInfo = {};
+
+socket.on('renderedChunks', function(rendered){
+  chunkInfo = rendered;
+});
 
 
 //client
@@ -118,37 +117,28 @@ function drawTrees(){
   }
 }
 
-// function drawBlocks(){
-//   for(var x = 0; x < nonconEntiesC.gridSpot.length; x++){
-//     for(var y = 0; y < nonconEntiesC.gridSpot[x].length; y++){
-//       if(render(x, y) === true) {
-//         if(nonconEntiesC.gridSpot[x][y].r != null){
-//             ctx.beginPath();
-//             ctx.rect(x * gridSize - publicEntiesC.players[arrayPOS].x + 320 - (nonconEntiesC.borderRadius * gridSize) , y * gridSize - publicEntiesC.players[arrayPOS].y + 240 - (nonconEntiesC.borderRadius * gridSize), gridSize, gridSize);
-//             ctx.fillStyle = "rgb(" + nonconEntiesC.gridSpot[x][y].r + ", " +nonconEntiesC.gridSpot[x][y].g + ", " + nonconEntiesC.gridSpot[x][y].b + ")";
-//             ctx.fill();
-//             ctx.closePath();
-//           }
-//         }
-//       }
-//     }
-//   }
+chunkSize = 8;
 
-// function drawTrees(){
-//   for(var i = 0; i < nonconEntiesC.trees.length; i++){
-    
-//   }
-// }
+function drawChunk(){
+  for(var x = 0; x < chunkSize; x++){
+    for(var y = 0; y < chunkSize; y++){
+      if(chunkInfo.chunk[x][y].tree === true){
+        ctx.beginPath();
+        ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo.x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo.y * chunkSize * gridSize), gridSize, gridSize)
+        ctx.fillStyle = "rgb(0, 255, 0)";
+        ctx.fill();
+        ctx.closePath();
+      }
+    }
+  }
+}
 
-
-
-
-//client
 function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
   getFocus();
 	drawGrid();
-  drawTrees();
+  // drawTrees();
+  drawChunk();
   drawPlayers();
 	document.getElementById("cords").innerHTML = "X= " + players[currentPlayer].x + "Y= " + players[currentPlayer].y;
 }
