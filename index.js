@@ -10,31 +10,57 @@ var trees = [];
 
 var players = [];
 
-// var order = 0;
+var chunks ={};
 
-// for(var x = 0; x < nonconEnties.borderRadius * 2; x++){
-// 	nonconEnties.gridSpot.push(
-// 		[]	
-// 	)
-// 	for(var y = 0; y < nonconEnties.borderRadius * 2; y++){
-// 		var red = null;
-//         var green = null;
-//         var blue = null;
-//         var trueX = x * 40;
-//         var trueY = y * 40;
+var chunkSize = 8;
+//takes player index
+var playerRender = [];
+
+createChunk(0,0);
+
+function createChunk(cX, cY){
+	var chunkInfo = {
+		x : cX,
+		y : cY,
+		chunk : []
+	}
+		for(var x = 0; x < chunkSize; x++){
+			chunkInfo.chunk.push([]);
+			for(var y = 0; y < chunkSize; y++){
+				chunkInfo.chunk[x].push({});
+				if(Math.random()< 0.5){	
+					chunkInfo.chunk[x][y].tree = true;
+				}
+			}
+		}
+		chunks[cX + "x" + cY] = chunkInfo;
+}
+
+function loadChunk(p){
+	var positionX = players[p].gridX;
+	var positionY = players[p].gridY;
+
+	var currentChunk = {
+		chunkX : Math.floor(players[p].gridX/chunkSize),
+		chunkY : Math.floor(players[p].gridY/chunkSize)
+	}
 
 
-// 		nonconEnties.gridSpot[x].push({
-// 			r : red,
-// 			g : green,
-// 			b : blue,
-// 			spot : order
-// 		})
 
-// 		order++
-// 	}
+	playerRender[p] = chunks[currentChunk.chunkX + "x" + currentChunk.chunkY];
 
-// }
+	//creating new chunks
+	if(playerRender[p] === undefined){
+		createChunk(currentChunk.chunkX, currentChunk.chunkY)
+		playerRender[p] = chunks[currentChunk.chunkX + "x" + currentChunk.chunkY];
+	}
+
+	//emitting chunks to players
+	io.to(`${playerIDs[p]}`).emit('renderedChunks', playerRender[p])
+}
+
+
+
 function render(x, y){
   if(x <= players[arrayPOS].gridX + 8 && x >= players[arrayPOS].gridX - 8){
     if(y <= players[arrayPOS].gridY + 6 && y >= players[arrayPOS].gridY - 6){
@@ -47,7 +73,7 @@ function render(x, y){
 function emitInfo(){
 	for(var i = 0; i < players.length; i++){
 		var wraper = {
-			treeList : [],
+			// treeList : [],
 			playerList : []
 		}
 		for(var n = 0; n < players.length; n++){
@@ -59,22 +85,22 @@ function emitInfo(){
 		}
 
 
-		for(var n = 0; n < trees.length; n++){
-			if(trees[n].gridX <= players[i].gridX + 8 && trees[n].gridX >= players[i].gridX - 8){
-    			if(trees[n].gridY <= players[i].gridY + 6 && trees[n].gridY >= players[i].gridY - 6){
-      				wraper.treeList.push(trees[n]);
-    			}
-  			}
-		}
+		// for(var n = 0; n < trees.length; n++){
+		// 	if(trees[n].gridX <= players[i].gridX + 8 && trees[n].gridX >= players[i].gridX - 8){
+  //   			if(trees[n].gridY <= players[i].gridY + 6 && trees[n].gridY >= players[i].gridY - 6){
+  //     				wraper.treeList.push(trees[n]);
+  //   			}
+  // 			}
+		// }
 
-		io.to(`${playerIDs[i]}`).emit('treeInfo', wraper.treeList);
+		// io.to(`${playerIDs[i]}`).emit('treeInfo', wraper.treeList);
 		io.to(`${playerIDs[i]}`).emit('playerInfo', wraper.playerList);
 
 	}
 }
 
 function growTree(){
-	if (Math.random() < 0.5){
+	if (Math.random() < 0.04){
 		var randX = (Math.floor(Math.random() * (borderRadius*2)) - borderRadius);
 		var randY = (Math.floor(Math.random() * (borderRadius*2)) - borderRadius);
 
@@ -160,9 +186,16 @@ function move(){
 	  	}
 }
 
+function selectPlayers(){
+	for (var i=0; i < players.length; i++){
+		loadChunk(i);
+	}
+}
+
 function ping(){
 	move();
-	growTree();
+	selectPlayers();
+	// growTree();
 	emitInfo();
 }
 
