@@ -5,7 +5,7 @@ app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
-var borderRadius = 50;
+var borderRadius = 200;
 var trees = [];
 
 var players = [];
@@ -36,30 +36,44 @@ function createChunk(cX, cY){
 		chunks[cX + "x" + cY] = chunkInfo;
 }
 
+
+
 function loadChunk(p){
 	var positionX = players[p].gridX;
 	var positionY = players[p].gridY;
 
-	var currentChunk = {
-		chunkX : Math.floor(players[p].gridX/chunkSize),
-		chunkY : Math.floor(players[p].gridY/chunkSize)
-	}
+	playerRender[p] = {};
+		for(x = -1; x <=1; x++){
+			for(y = -1; y <=1; y++){
 
+				var currentChunk = {
+					chunkX : Math.floor(players[p].gridX/chunkSize) + x,
+					chunkY : Math.floor(players[p].gridY/chunkSize) + y
+				}
 
+				
 
-	playerRender[p] = chunks[currentChunk.chunkX + "x" + currentChunk.chunkY];
+				playerRender[p][x+"x"+y] = chunks[currentChunk.chunkX + "x" + currentChunk.chunkY];
 
-	//creating new chunks
-	if(playerRender[p] === undefined){
-		createChunk(currentChunk.chunkX, currentChunk.chunkY)
-		playerRender[p] = chunks[currentChunk.chunkX + "x" + currentChunk.chunkY];
-	}
-
-	//emitting chunks to players
+				//creating new chunks
+					if(playerRender[p][x+"x"+y] === undefined){
+						createChunk(currentChunk.chunkX, currentChunk.chunkY)
+						playerRender[p][x+"x"+y] = chunks[currentChunk.chunkX + "x" + currentChunk.chunkY];
+					}
+				}
+			}
 	io.to(`${playerIDs[p]}`).emit('renderedChunks', playerRender[p])
 }
 
-
+// var rendered = {
+// 	playerIDs[p] : {
+// 		loadedChunk : {
+// 			renderedChunk : playerRender[p],
+// 			chunkX : currentChunk.chunkX,
+// 			chunkY : currentChunk.chunkY
+// 		}
+// 	}
+// }
 
 function render(x, y){
   if(x <= players[arrayPOS].gridX + 8 && x >= players[arrayPOS].gridX - 8){
