@@ -39,11 +39,7 @@ socket.on('ID', function(result){
   ID = result;
 });
 
-var chunkInfo = {};
 
-socket.on('renderedChunks', function(rendered){
-  chunkInfo = rendered;
-});
 
 
 //client
@@ -107,31 +103,47 @@ function render(x, y){
 }
 
 
-function drawTrees(){
-  for(var i = 0; i < trees.length; i++){
-      ctx.beginPath();
-      ctx.rect(trees[i].gridX * gridSize - players[currentPlayer].x + 320, trees[i].gridY * gridSize - players[currentPlayer].y + 240, gridSize, gridSize)
-      ctx.fillStyle = "rgb(0, 255, 0)";
-      ctx.fill();
-      ctx.closePath();
-  }
-}
+// function drawTrees(){
+//   for(var i = 0; i < trees.length; i++){
+//       ctx.beginPath();
+//       ctx.rect(trees[i].gridX * gridSize - players[currentPlayer].x + 320, trees[i].gridY * gridSize - players[currentPlayer].y + 240, gridSize, gridSize)
+//       ctx.fillStyle = "rgb(0, 255, 0)";
+//       ctx.fill();
+//       ctx.closePath();
+//   }
+// }
 
 chunkSize = 8;
 
+var chunkInfo = {};
+
+socket.on('renderedChunks', function(rendered){
+  for(x = -1; x <=1; x++){
+      for(y = -1; y <=1; y++){
+      chunkInfo[x+"x"+y] = rendered[x+"x"+y];
+    }
+  }
+});
+
+
 function drawChunk(){
-  for(var x = 0; x < chunkSize; x++){
-    for(var y = 0; y < chunkSize; y++){
-      if(chunkInfo.chunk[x][y].tree === true){
-        ctx.beginPath();
-        ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo.x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo.y * chunkSize * gridSize), gridSize, gridSize)
-        ctx.fillStyle = "rgb(0, 255, 0)";
-        ctx.fill();
-        ctx.closePath();
+  for(xC = -1; xC <=1; xC++){
+      for(yC = -1; yC <=1; yC++){
+        for(var x = 0; x < chunkSize; x++){
+          for(var y = 0; y < chunkSize; y++){
+            if(chunkInfo[xC+"x"+yC].chunk[x][y].tree === true){
+              ctx.beginPath();
+              //tree positioning is equal to playerXY multiplied by chunkXY times the size of 16 and the grid size of forty. Then array x/y position multiplied by grid size is added
+              ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
+              ctx.fillStyle = "rgb(0, 255, 0)";
+              ctx.fill();
+              ctx.closePath();
+            }
+          }
+        }
       }
     }
   }
-}
 
 function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
