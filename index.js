@@ -5,7 +5,7 @@ app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
-var borderRadius = 200;
+var borderRadius = 400;
 var trees = [];
 
 var players = [];
@@ -28,7 +28,7 @@ function createChunk(cX, cY){
 			chunkInfo.chunk.push([]);
 			for(var y = 0; y < chunkSize; y++){
 				chunkInfo.chunk[x].push({});
-				if(Math.random()< 0.5){	
+				if(Math.random()< 0.2){	
 					chunkInfo.chunk[x][y].tree = true;
 				}
 			}
@@ -144,6 +144,7 @@ app.get('/', function(req, res){
 
 var playerCount = 0;
 
+
 io.on('connection', function(socket){
   	console.log(socket.id + " connected");
   	playerIDs.push(socket.id);
@@ -152,6 +153,10 @@ io.on('connection', function(socket){
   		y : 0,
   		gridX : 0,
   		gridY : 0,
+  		chunkX : 0,
+  		chunkY : 0,
+  		chunkGridX : 0,
+  		chunkGridY : 0,
   		right : false,
   		left : false,
   		up : false,
@@ -175,39 +180,121 @@ io.on('connection', function(socket){
 
 
 
-function move(){
-	for(var i = 0; i < players.length; i++){
+function move(i){
 			if (players[i].right === true && players[i].x < borderRadius * 40){
-	  			players[i].x += 2;
+				var moveRight = true;
+				if (players[i].x % 40 === 38 || players[i].x % 40 === -2) {
+					if(playerRender[i]["0x0"].chunk[players[i].chunkGridX + 1] === undefined){
+						if (playerRender[i]["1x0"].chunk[0][players[i].chunkGridY].tree === true){
+			  				moveRight = false;
+			  			}
+					} else {
+			  		
+			  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX + 1][players[i].chunkGridY].tree === true){
+			  			moveRight = false;
+			  		}
+			  	}
+
+		  		}
+		  		if (moveRight === true){
+		  			players[i].x += 2;
+		  		} 
 	  		}
 
 	  		if (players[i].left === true && players[i].x > (Math.abs(borderRadius) * -1) * 40){
-	  			players[i].x -= 2;
+	  			var moveLeft = true;
+				if (players[i].x % 40 === 2 || players[i].x % 40 === -38) {
+					if(playerRender[i]["0x0"].chunk[players[i].chunkGridX - 1] === undefined){
+						if (playerRender[i]["-1x0"].chunk[7][players[i].chunkGridY].tree === true){
+			  				moveLeft = false;
+			  			}
+					} else {
+			  		
+			  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX - 1][players[i].chunkGridY].tree === true){
+			  			moveLeft = false;
+			  		}
+			  	}
+
+		  		}
+		  		if (moveLeft === true){
+		  			players[i].x -= 2;
+		  		} 
 
 	  		}
 
 	  		if (players[i].up === true && players[i].y > (Math.abs(borderRadius) * -1) * 40){
-	  			players[i].y -= 2;
+	  			var moveUp = true;
+				if (players[i].y % 40 === -38 || players[i].y % 40 === 2) {
+					if(playerRender[i]["0x0"].chunk[players[i].chunkGridY - 1] === undefined){
+						if (playerRender[i]["0x-1"].chunk[players[i].chunkGridX][7].tree === true){
+			  				moveUp = false;
+			  			}
+					} else {
+			  		
+			  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX][players[i].chunkGridY-1].tree === true){
+			  			moveUp = false;
+			  		}
+			  	}
+
+		  		}
+		  		if (moveUp === true){
+		  			players[i].y -= 2;
+		  		} 
 
 	  		}
 
 	  		if (players[i].down === true && players[i].y < borderRadius * 40){
-	  			players[i].y += 2;
+	  			var moveDown = true;
+				if (players[i].y % 40 === -2 || players[i].y % 40 === 38) {
+					if(playerRender[i]["0x0"].chunk[players[i].chunkGridY + 1] === undefined){
+						if (playerRender[i]["0x1"].chunk[players[i].chunkGridX][0].tree === true){
+			  				moveDown = false;
+			  			}
+					} else {
+			  		
+			  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX][players[i].chunkGridY+1].tree === true){
+			  			moveDown = false;
+			  		}
+			  	}
+
+		  		}
+		  		if (moveDown === true){
+		  			players[i].y += 2;
+		  		} 
 
 	  		}
 	  		players[i].gridX = Math.floor(players[i].x/40)
 	  		players[i].gridY = Math.floor(players[i].y/40)
-	  	}
+
+	  		players[i].chunkX = Math.floor(players[i].gridX/8)
+	  		players[i].chunkY = Math.floor(players[i].gridY/8)
+
+	  		players[i].chunkGridX = players[i].gridX % 8;
+	  		if (players[i].chunkGridX < 0){
+	  			players[i].chunkGridX += 8;
+	  		}	
+
+	  		players[i].chunkGridY = players[i].gridY % 8;
+	  		if (players[i].chunkGridY < 0){
+	  			players[i].chunkGridY += 8;
+	  		}	
+	  		
+
+	  		// players[i].chunkGridX
+
+	  		// //wrong
+	  		// players[i].chunkGridX = Math.abs(players.gridX % 8);
+	  		// players[i].chunkGridY = Math.abs(players.gridY % 8);
 }
 
 function selectPlayers(){
 	for (var i=0; i < players.length; i++){
 		loadChunk(i);
+		move(i);
 	}
 }
 
 function ping(){
-	move();
 	selectPlayers();
 	// growTree();
 	emitInfo();
