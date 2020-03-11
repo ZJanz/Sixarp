@@ -161,7 +161,8 @@ io.on('connection', function(socket){
   		left : false,
   		up : false,
   		down : false,
-  		ID : playerCount
+  		ID : playerCount,
+  		wood : 0
   	});
   	io.to(`${socket.id}`).emit('ID', players[players.length-1].ID);
   	playerCount++;
@@ -170,8 +171,40 @@ io.on('connection', function(socket){
   		players[playerIDs.indexOf(socket.id)].left = state.leftPressed;
   		players[playerIDs.indexOf(socket.id)].up = state.upPressed;
   		players[playerIDs.indexOf(socket.id)].down = state.downPressed;
-
   	} )
+  	socket.on('chopEast', function(){
+  		var idPOS = playerIDs.indexOf(socket.id);
+  		if(players[idPOS].chunkGridX != 7){
+  			chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX + 1][players[idPOS].chunkGridY].tree = false;
+  		} else{
+  			chunks[[players[idPOS].chunkX + 1] + "x" + [players[idPOS].chunkY]].chunk[0][players[idPOS].chunkGridY].tree = false;
+  		}
+  	})
+  	socket.on('chopSouth', function(){
+  		var idPOS = playerIDs.indexOf(socket.id);
+  		if(players[idPOS].chunkGridY != 7){
+  			chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY+1].tree = false;
+  		} else{
+  			chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY+1]].chunk[players[idPOS].chunkGridX][0].tree = false;
+  		}
+  	})
+  	socket.on('chopNorth', function(){
+  		var idPOS = playerIDs.indexOf(socket.id);
+  		if(players[idPOS].chunkGridY != 0){
+  			chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY-1].tree = false;
+  		} else{
+  			chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY-1]].chunk[players[idPOS].chunkGridX][7].tree = false;
+  		}
+  	})
+  	socket.on('chopWest', function(){
+  		var idPOS = playerIDs.indexOf(socket.id);
+  		if(players[idPOS].chunkGridX != 0){
+  			chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX - 1][players[idPOS].chunkGridY].tree = false;
+  		} else{
+  			chunks[[players[idPOS].chunkX - 1] + "x" + [players[idPOS].chunkY]].chunk[7][players[idPOS].chunkGridY].tree = false;
+  		}
+  	})
+
   	socket.on('disconnect', function(){
     	console.log(socket.id + ' disconnected');
 	})
