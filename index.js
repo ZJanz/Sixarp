@@ -75,14 +75,14 @@ function loadChunk(p){
 // 	}
 // }
 
-function render(x, y){
-  if(x <= players[arrayPOS].gridX + 8 && x >= players[arrayPOS].gridX - 8){
-    if(y <= players[arrayPOS].gridY + 6 && y >= players[arrayPOS].gridY - 6){
-      return true;
-    }
-  }
-  else {return false}
-}
+// function render(x, y){
+//   if(x <= players[arrayPOS].gridX + 8 && x >= players[arrayPOS].gridX - 8){
+//     if(y <= players[arrayPOS].gridY + 6 && y >= players[arrayPOS].gridY - 6){
+//       return true;
+//     }
+//   }
+//   else {return false}
+// }
 
 function emitInfo(){
 	for(var i = 0; i < players.length; i++){
