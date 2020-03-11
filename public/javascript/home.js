@@ -224,19 +224,19 @@ document.getElementById("northChop").addEventListener("click", chopNorthHandler)
 document.getElementById("southChop").addEventListener("click", chopSouthHandler);
 
 function chopEastHandler(){
-  alert("chop east");
+  socket.emit('chopEast');
 }
 
 function chopWestHandler(){
-  alert("chop West");
+  socket.emit('chopWest');
 }
 
 function chopNorthHandler(){
-  alert("chop North");
+  socket.emit('chopNorth');
 }
 
 function chopSouthHandler(){
-  alert("chop South");
+  socket.emit('chopSouth');
 }
 
 function keyDownHandler(e) {
