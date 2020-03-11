@@ -4,16 +4,13 @@
 
     <meta charset="utf-8" />
     <title>Grid Game</title>
-    <style>
-    	* { padding: 0; margin: 0; }
-    	canvas { background: #eee; display: block; margin: 0 auto; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/home.css">
 </head>
 <script src="/socket.io/socket.io.js"></script>
 <body>
 
 <canvas id="myCanvas" width="640" height="480"></canvas>
-<p id="cords">cords here<p/>
+<p><span id="cords">cords here</span><button id='eastChop'>Chop East Tree</button><button id="westChop"> Chop West Tree</button><button id="northChop"> Chop North Tree</button><button id="southChop"> Chop South Tree</button></p>
 
 <script type="text/javascript" src="javascript/home.js"></script>
 
