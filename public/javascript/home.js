@@ -125,6 +125,64 @@ socket.on('renderedChunks', function(rendered){
   }
 });
 
+function checkSuroundings(){
+  if(players[currentPlayer].chunkGridX === 7) {
+    if(chunkInfo[1+"x"+0].chunk[0][players[currentPlayer].chunkGridY].tree === true){
+      document.getElementById("eastChop").style.display = "inline";
+      // document.getElementById("eastChop").addEventListener("click", chopEastHandler);
+    } else {
+      document.getElementById("eastChop").style.display = "none";
+    }
+  } else {
+    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX + 1][players[currentPlayer].chunkGridY].tree === true){
+      document.getElementById("eastChop").style.display = "inline";
+    } else {
+      document.getElementById("eastChop").style.display = "none";
+    }
+  }
+
+  if(players[currentPlayer].chunkGridX === 0) {
+    if(chunkInfo[-1+"x"+0].chunk[7][players[currentPlayer].chunkGridY].tree === true){
+      document.getElementById("westChop").style.display = "inline";
+    } else {
+      document.getElementById("westChop").style.display = "none";
+    }
+  } else {
+    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX - 1][players[currentPlayer].chunkGridY].tree === true){
+      document.getElementById("westChop").style.display = "inline";
+    } else {
+      document.getElementById("westChop").style.display = "none";
+    }
+  }
+
+  if(players[currentPlayer].chunkGridY === 0) {
+    if(chunkInfo[0+"x"+-1].chunk[players[currentPlayer].chunkGridX][7].tree === true){
+      document.getElementById("northChop").style.display = "inline";
+    } else {
+      document.getElementById("northChop").style.display = "none";
+    }
+  } else {
+    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX][players[currentPlayer].chunkGridY-1].tree === true){
+      document.getElementById("northChop").style.display = "inline";
+    } else {
+      document.getElementById("northChop").style.display = "none";
+    }
+  }
+
+  if(players[currentPlayer].chunkGridY === 7) {
+    if(chunkInfo[0+"x"+1].chunk[players[currentPlayer].chunkGridX][0].tree === true){
+      document.getElementById("southChop").style.display = "inline";
+    } else {
+      document.getElementById("southChop").style.display = "none";
+    }
+  } else {
+    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX][players[currentPlayer].chunkGridY+1].tree === true){
+      document.getElementById("southChop").style.display = "inline";
+    } else {
+      document.getElementById("southChop").style.display = "none";
+    }
+  }
+}
 
 function drawChunk(){
   for(xC = -1; xC <=1; xC++){
@@ -152,6 +210,7 @@ function draw() {
   // drawTrees();
   drawChunk();
   drawPlayers();
+  checkSuroundings();
 	document.getElementById("cords").innerHTML = "X= " + players[currentPlayer].x + "Y= " + players[currentPlayer].y;
 }
 
@@ -159,7 +218,26 @@ function draw() {
 
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
+document.getElementById("eastChop").addEventListener("click", chopEastHandler);
+document.getElementById("westChop").addEventListener("click", chopWestHandler);
+document.getElementById("northChop").addEventListener("click", chopNorthHandler);
+document.getElementById("southChop").addEventListener("click", chopSouthHandler);
 
+function chopEastHandler(){
+  alert("chop east");
+}
+
+function chopWestHandler(){
+  alert("chop West");
+}
+
+function chopNorthHandler(){
+  alert("chop North");
+}
+
+function chopSouthHandler(){
+  alert("chop South");
+}
 
 function keyDownHandler(e) {
     if(e.key == "Right" || e.key == "ArrowRight") {
