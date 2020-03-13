@@ -1,5 +1,9 @@
+
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
+
+const rect = canvas.getBoundingClientRect();
+
 var socket = io();
 
 
@@ -40,6 +44,7 @@ socket.on('ID', function(result){
 });
 
 
+canvas.addEventListener("mousedown", onDown, false);
 
 
 //client
@@ -76,11 +81,13 @@ function getFocus(){
 //client
 function drawPlayers(){
   for(var i = 0; i < players.length; i++){
-    ctx.beginPath();
-    ctx.rect(players[i].gridX * gridSize - players[currentPlayer].x + 320, players[i].gridY * gridSize - players[currentPlayer].y + 240, gridSize, gridSize);
-    ctx.fillStyle = "#FF0000";
-    ctx.fill();
-    ctx.closePath();
+
+    //debug info
+    // ctx.beginPath();
+    // ctx.rect(players[i].gridX * gridSize - players[currentPlayer].x + 320, players[i].gridY * gridSize - players[currentPlayer].y + 240, gridSize, gridSize);
+    // ctx.fillStyle = "#FF0000";
+    // ctx.fill();
+    // ctx.closePath();
 
     ctx.beginPath();
     ctx.arc(players[i].x - players[currentPlayer].x + canvas.width/2, players[i].y - players[currentPlayer].y + canvas.height/2, ballRadius, 0, Math.PI*2);
@@ -126,14 +133,29 @@ socket.on('renderedChunks', function(rendered){
 });
 
 function checkSuroundings(){
+  document.getElementById("woodAmount").innerHTML = players[currentPlayer].wood;
+
   if(players[currentPlayer].chunkGridX === 7) {
+
+    if(chunkInfo[1+"x"+0].chunk[7][players[currentPlayer].chunkGridY].isEmpty === true && players[currentPlayer].wood > 0){
+      document.getElementById("eastPlace").style.display = "inline";
+    } else {
+      document.getElementById("eastPlace").style.display = "none";
+    }
+
     if(chunkInfo[1+"x"+0].chunk[0][players[currentPlayer].chunkGridY].tree === true){
       document.getElementById("eastChop").style.display = "inline";
-      // document.getElementById("eastChop").addEventListener("click", chopEastHandler);
     } else {
       document.getElementById("eastChop").style.display = "none";
     }
   } else {
+
+    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX + 1][players[currentPlayer].chunkGridY].isEmpty === true && players[currentPlayer].wood > 0){
+      document.getElementById("eastPlace").style.display = "inline";
+    } else {
+      document.getElementById("eastPlace").style.display = "none";
+    }
+
     if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX + 1][players[currentPlayer].chunkGridY].tree === true){
       document.getElementById("eastChop").style.display = "inline";
     } else {
@@ -142,6 +164,12 @@ function checkSuroundings(){
   }
 
   if(players[currentPlayer].chunkGridX === 0) {
+    if(chunkInfo[-1+"x"+0].chunk[7][players[currentPlayer].chunkGridY].isEmpty === true && players[currentPlayer].wood > 0){
+      document.getElementById("westPlace").style.display = "inline";
+    } else {
+      document.getElementById("westPlace").style.display = "none";
+    }
+
     if(chunkInfo[-1+"x"+0].chunk[7][players[currentPlayer].chunkGridY].tree === true){
       document.getElementById("westChop").style.display = "inline";
     } else {
@@ -153,6 +181,12 @@ function checkSuroundings(){
     } else {
       document.getElementById("westChop").style.display = "none";
     }
+
+    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX - 1][players[currentPlayer].chunkGridY].isEmpty === true && players[currentPlayer].wood > 0){
+      document.getElementById("westPlace").style.display = "inline";
+    } else {
+      document.getElementById("westPlace").style.display = "none";
+    }
   }
 
   if(players[currentPlayer].chunkGridY === 0) {
@@ -161,11 +195,23 @@ function checkSuroundings(){
     } else {
       document.getElementById("northChop").style.display = "none";
     }
+
+    if(chunkInfo[0+"x"+-1].chunk[players[currentPlayer].chunkGridX][7].isEmpty === true && players[currentPlayer].wood > 0){
+      document.getElementById("northPlace").style.display = "inline";
+    } else {
+      document.getElementById("northPlace").style.display = "none";
+    }
   } else {
     if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX][players[currentPlayer].chunkGridY-1].tree === true){
       document.getElementById("northChop").style.display = "inline";
     } else {
       document.getElementById("northChop").style.display = "none";
+    }
+
+    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX][players[currentPlayer].chunkGridY-1].isEmpty === true && players[currentPlayer].wood > 0){
+      document.getElementById("northPlace").style.display = "inline";
+    } else {
+      document.getElementById("northPlace").style.display = "none";
     }
   }
 
@@ -175,11 +221,24 @@ function checkSuroundings(){
     } else {
       document.getElementById("southChop").style.display = "none";
     }
+
+    if(chunkInfo[0+"x"+1].chunk[players[currentPlayer].chunkGridX][0].isEmpty === true && players[currentPlayer].wood > 0){
+      document.getElementById("southPlace").style.display = "inline";
+    } else {
+      document.getElementById("southPlace").style.display = "none";
+    }
+
   } else {
     if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX][players[currentPlayer].chunkGridY+1].tree === true){
       document.getElementById("southChop").style.display = "inline";
     } else {
       document.getElementById("southChop").style.display = "none";
+    }
+
+    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX][players[currentPlayer].chunkGridY+1].isEmpty === true && players[currentPlayer].wood > 0){
+      document.getElementById("southPlace").style.display = "inline";
+    } else {
+      document.getElementById("southPlace").style.display = "none";
     }
   }
 }
@@ -189,6 +248,16 @@ function drawChunk(){
       for(yC = -1; yC <=1; yC++){
         for(var x = 0; x < chunkSize; x++){
           for(var y = 0; y < chunkSize; y++){
+
+            if(chunkInfo[xC+"x"+yC].chunk[x][y].wall === true){
+              ctx.beginPath();
+              //positioning is equal to playerXY multiplied by chunkXY times the size of 16 and the grid size of forty. Then array x/y position multiplied by grid size is added
+              ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
+              ctx.fillStyle = "rgb(139,69,19)";
+              ctx.fill();
+              ctx.closePath();
+            }
+
             if(chunkInfo[xC+"x"+yC].chunk[x][y].tree === true){
               ctx.beginPath();
               //tree positioning is equal to playerXY multiplied by chunkXY times the size of 16 and the grid size of forty. Then array x/y position multiplied by grid size is added
@@ -203,11 +272,43 @@ function drawChunk(){
     }
   }
 
+function onDown(event){
+  cx = (event.pageX - rect.left - (canvas.width/2)) + players[currentPlayer].x;
+  cy = (event.pageY - rect.top - (canvas.height/2)) + players[currentPlayer].y;
+  getChosenGrid(cx, cy);
+}
+
+
+function getChosenGrid(x, y){
+  var gridXClicked = Math.floor(x/40)
+  var gridYClicked = Math.floor(y/40)
+
+  // var chunkClickedX = undefined
+  // var chunkClickedY = undefined
+
+  var chunkClickedX = Math.floor(gridXClicked/8);
+  var chunkClickedY = Math.floor(gridYClicked/8);
+
+  var chunkGridXClicked = gridXClicked % 8;
+  var chunkGridYClicked = gridYClicked % 8;
+
+  if(chunkGridXClicked < 0){
+    chunkGridXClicked += 8;
+  }
+
+  if(chunkGridYClicked < 0){
+    chunkGridYClicked += 8;
+  }
+
+
+  alert("chunk " + chunkClickedX + ", " + chunkClickedY + " Grid " + chunkGridXClicked+", " + chunkGridYClicked);
+}
+
+
 function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
   getFocus();
 	drawGrid();
-  // drawTrees();
   drawChunk();
   drawPlayers();
   checkSuroundings();
@@ -223,6 +324,11 @@ document.getElementById("westChop").addEventListener("click", chopWestHandler);
 document.getElementById("northChop").addEventListener("click", chopNorthHandler);
 document.getElementById("southChop").addEventListener("click", chopSouthHandler);
 
+document.getElementById("eastPlace").addEventListener("click", placeEastHandler);
+document.getElementById("westPlace").addEventListener("click", placeWestHandler);
+document.getElementById("northPlace").addEventListener("click", placeNorthHandler);
+document.getElementById("southPlace").addEventListener("click", placeSouthHandler);
+
 function chopEastHandler(){
   socket.emit('chopEast');
 }
@@ -237,6 +343,22 @@ function chopNorthHandler(){
 
 function chopSouthHandler(){
   socket.emit('chopSouth');
+}
+
+function placeEastHandler(){
+  socket.emit('placeEast');
+}
+
+function placeWestHandler(){
+  socket.emit('placeWest');
+}
+
+function placeNorthHandler(){
+  socket.emit('placeNorth');
+}
+
+function placeSouthHandler(){
+  socket.emit('placeSouth');
 }
 
 function keyDownHandler(e) {
