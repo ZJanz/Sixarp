@@ -16,3 +16,23 @@ canvas { background: #eee; display: block; margin: 0 auto; }
 #southChop {
 	display:none;
 }
+
+#eastPlace {
+	display:none;
+}
+
+#northPlace {
+	display:none;
+}
+
+#westPlace {
+	display:none;
+}
+
+#southPlace {
+	display:none;
+}
+
+#chop {
+	display:none;
+}
