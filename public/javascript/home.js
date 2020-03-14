@@ -268,6 +268,12 @@ function drawChunk(){
             }
           }
         }
+        if(chunkInfo[xC+"x"+yC].x === clickedArea.chunkClickedX && chunkInfo[xC+"x"+yC].y === clickedArea.chunkClickedY){
+              ctx.beginPath();
+              ctx.strokeStyle = "blue";
+              ctx.rect(clickedArea.chunkGridXClicked * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), clickedArea.chunkGridYClicked * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
+              ctx.stroke();
+        }
       }
     }
   }
@@ -278,6 +284,8 @@ function onDown(event){
   getChosenGrid(cx, cy);
 }
 
+
+var clickedArea = {};
 
 function getChosenGrid(x, y){
   var gridXClicked = Math.floor(x/40)
@@ -300,8 +308,11 @@ function getChosenGrid(x, y){
     chunkGridYClicked += 8;
   }
 
-
-  alert("chunk " + chunkClickedX + ", " + chunkClickedY + " Grid " + chunkGridXClicked+", " + chunkGridYClicked);
+  clickedArea.chunkClickedX = chunkClickedX
+  clickedArea.chunkClickedY = chunkClickedY
+  clickedArea.chunkGridXClicked = chunkGridXClicked
+  clickedArea.chunkGridYClicked = chunkGridYClicked
+  // alert("chunk " + chunkClickedX + ", " + chunkClickedY + " Grid " + chunkGridXClicked+", " + chunkGridYClicked);
 }
 
 
