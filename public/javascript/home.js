@@ -273,6 +273,15 @@ function drawChunk(){
               ctx.strokeStyle = "blue";
               ctx.rect(clickedArea.chunkGridXClicked * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), clickedArea.chunkGridYClicked * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
               ctx.stroke();
+              ctx.closePath();
+              var chosenGrid = chunkInfo[xC+"x"+yC].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked]
+              document.getElementById("gridValue").innerHTML = "tree = " + chosenGrid.tree + " isSolid = " + chosenGrid.isSolid + " isEmpty = " + chosenGrid.isEmpty + " chunkX = " + clickedArea.chunkClickedX + " chunkY = " + clickedArea.chunkClickedY + " gridX = " + clickedArea.chunkGridXClicked + " gridY = " + clickedArea.chunkGridYClicked;
+              if(chosenGrid.tree === true){
+                document.getElementById("chop").style.display = "inline";
+              }
+              else {
+                document.getElementById("chop").style.display = "none";
+              }
         }
       }
     }
@@ -339,6 +348,11 @@ document.getElementById("eastPlace").addEventListener("click", placeEastHandler)
 document.getElementById("westPlace").addEventListener("click", placeWestHandler);
 document.getElementById("northPlace").addEventListener("click", placeNorthHandler);
 document.getElementById("southPlace").addEventListener("click", placeSouthHandler);
+document.getElementById("chop").addEventListener("click", chopHandler);
+
+function chopHandler(){
+  socket.emit('chop', clickedArea);
+}
 
 function chopEastHandler(){
   socket.emit('chopEast');
