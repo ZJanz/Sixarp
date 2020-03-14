@@ -28,8 +28,12 @@ function createChunk(cX, cY){
 			chunkInfo.chunk.push([]);
 			for(var y = 0; y < chunkSize; y++){
 				chunkInfo.chunk[x].push({});
+				chunkInfo.chunk[x][y].isSolid = false;
+				chunkInfo.chunk[x][y].isEmpty = true;
 				if(Math.random()< 0.2){	
 					chunkInfo.chunk[x][y].tree = true;
+					chunkInfo.chunk[x][y].isEmpty = false;
+					chunkInfo.chunk[x][y].isSolid = true;
 				}
 			}
 		}
@@ -166,43 +170,320 @@ io.on('connection', function(socket){
   	});
   	io.to(`${socket.id}`).emit('ID', players[players.length-1].ID);
   	playerCount++;
+  	var idPOS = playerIDs.indexOf(socket.id);
   	socket.on('movement', function(state){
   		players[playerIDs.indexOf(socket.id)].right = state.rightPressed;
   		players[playerIDs.indexOf(socket.id)].left = state.leftPressed;
   		players[playerIDs.indexOf(socket.id)].up = state.upPressed;
   		players[playerIDs.indexOf(socket.id)].down = state.downPressed;
   	} )
+  	socket.on('chop', function(chopArea){
+  		var range = 1;
+
+  		// var xDistancePositive = chopArea.chunkGridXClicked + range;
+  		// var yDistancePositive = chopArea.chunkGridYClicked + range;
+
+  		// var xDPLeftover = 0;
+  		// var xDPChunkLeftover = 0;
+
+  		// if(xDistancePositive >= 8){
+  		// 	xDPLeftover = xDistancePositive - 8;
+  		// }
+
+
+  		// if(chopArea.chunkGridXClicked - range <= 0){
+  		// 	chunks[chopArea.chunkClickedX - 1 + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
+  		// }
+  		if(players[idPOS].chunkX+1 === chopArea.chunkClickedX && players[idPOS].chunkY === chopArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - range){
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
+
+	  			players[idPOS].wood += 1;
+  			}
+  		}
+
+  		if(players[idPOS].chunkX-1 === chopArea.chunkClickedX && players[idPOS].chunkY === chopArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - range){
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
+
+	  			players[idPOS].wood += 1;
+  			}
+  		}
+
+  		if(players[idPOS].chunkX === chopArea.chunkClickedX && players[idPOS].chunkY - 1 === chopArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - 8 - range){
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
+
+	  			players[idPOS].wood += 1;
+  			}
+  		}
+
+  		if(players[idPOS].chunkX === chopArea.chunkClickedX && players[idPOS].chunkY + 1 === chopArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked + 8 - range){
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
+
+	  			players[idPOS].wood += 1;
+  			}
+  		}
+
+  		if(players[idPOS].chunkX-1 === chopArea.chunkClickedX && players[idPOS].chunkY - 1 === chopArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - 8 - range){
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
+
+	  			players[idPOS].wood += 1;
+  			}
+  		}
+
+  		if(players[idPOS].chunkX-1 === chopArea.chunkClickedX && players[idPOS].chunkY + 1 === chopArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked + 8 - range){
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
+
+	  			players[idPOS].wood += 1;
+  			}
+  		}
+
+
+  		if(players[idPOS].chunkX+1 === chopArea.chunkClickedX && players[idPOS].chunkY -1 === chopArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - 8 - range){
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
+
+	  			players[idPOS].wood += 1;
+  			}
+  		}
+
+  		if(players[idPOS].chunkX+1 === chopArea.chunkClickedX && players[idPOS].chunkY + 1 === chopArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked + 8 - range){
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
+
+	  			players[idPOS].wood += 1;
+  			}
+  		}
+
+
+
+  		if(players[idPOS].chunkX === chopArea.chunkClickedX && players[idPOS].chunkY === chopArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - range){
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
+	  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
+
+
+
+	  			players[idPOS].wood += 1;
+	  		}
+	  	}
+
+  	})
   	socket.on('chopEast', function(){
-  		var idPOS = playerIDs.indexOf(socket.id);
   		if(players[idPOS].chunkGridX != 7){
-  			chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX + 1][players[idPOS].chunkGridY].tree = false;
+  			if(chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX + 1][players[idPOS].chunkGridY].tree === true){
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX + 1][players[idPOS].chunkGridY].tree = false;
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX + 1][players[idPOS].chunkGridY].isSolid = false;
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX + 1][players[idPOS].chunkGridY].isEmpty = true;
+
+  				players[idPOS].wood += 1;
+  			}
   		} else{
-  			chunks[[players[idPOS].chunkX + 1] + "x" + [players[idPOS].chunkY]].chunk[0][players[idPOS].chunkGridY].tree = false;
+  			if(chunks[[players[idPOS].chunkX + 1] + "x" + [players[idPOS].chunkY]].chunk[0][players[idPOS].chunkGridY].tree === true){
+  				chunks[[players[idPOS].chunkX + 1] + "x" + [players[idPOS].chunkY]].chunk[0][players[idPOS].chunkGridY].tree = false;
+  				chunks[[players[idPOS].chunkX + 1] + "x" + [players[idPOS].chunkY]].chunk[0][players[idPOS].chunkGridY].isSolid = false;
+  				chunks[[players[idPOS].chunkX + 1] + "x" + [players[idPOS].chunkY]].chunk[0][players[idPOS].chunkGridY].isEmpty = true;
+
+  				players[idPOS].wood += 1;
+  			}
   		}
   	})
   	socket.on('chopSouth', function(){
   		var idPOS = playerIDs.indexOf(socket.id);
   		if(players[idPOS].chunkGridY != 7){
-  			chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY+1].tree = false;
+  			if(chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY+1].tree === true){
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY+1].tree = false;
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY+1].isSolid = false;
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY+1].isEmpty = true;
+
+
+  				players[idPOS].wood += 1;
+
+  			}
   		} else{
-  			chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY+1]].chunk[players[idPOS].chunkGridX][0].tree = false;
+  			if(chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY+1]].chunk[players[idPOS].chunkGridX][0].tree === true){
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY+1]].chunk[players[idPOS].chunkGridX][0].tree = false;
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY+1]].chunk[players[idPOS].chunkGridX][0].isSolid = false;
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY+1]].chunk[players[idPOS].chunkGridX][0].isEmpty = true;
+
+
+  				players[idPOS].wood += 1;
+
+  			}
   		}
   	})
   	socket.on('chopNorth', function(){
   		var idPOS = playerIDs.indexOf(socket.id);
-  		if(players[idPOS].chunkGridY != 0){
-  			chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY-1].tree = false;
+  		if(players[idPOS].chunkGridY != 0){ 
+  			if(chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY-1].tree === true){
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY-1].tree = false;
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY-1].isSolid = false;
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY-1].isEmpty = true;
+
+  				players[idPOS].wood += 1;
+
+  			}
   		} else{
-  			chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY-1]].chunk[players[idPOS].chunkGridX][7].tree = false;
+  			if(chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY-1]].chunk[players[idPOS].chunkGridX][7].tree === true){
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY-1]].chunk[players[idPOS].chunkGridX][7].tree = false;
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY-1]].chunk[players[idPOS].chunkGridX][7].isSolid = false;
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY-1]].chunk[players[idPOS].chunkGridX][7].isEmpty = true;
+
+  				players[idPOS].wood += 1;
+
+  			}
   		}
+
+
+
+
+
   	})
   	socket.on('chopWest', function(){
   		var idPOS = playerIDs.indexOf(socket.id);
   		if(players[idPOS].chunkGridX != 0){
-  			chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX - 1][players[idPOS].chunkGridY].tree = false;
+  			if(chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX - 1][players[idPOS].chunkGridY].tree === true){
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX - 1][players[idPOS].chunkGridY].tree = false;
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX - 1][players[idPOS].chunkGridY].isSolid = false;
+  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX - 1][players[idPOS].chunkGridY].isEmpty = true;
+
+  				players[idPOS].wood += 1;
+
+  			}
   		} else{
-  			chunks[[players[idPOS].chunkX - 1] + "x" + [players[idPOS].chunkY]].chunk[7][players[idPOS].chunkGridY].tree = false;
+  			if(chunks[[players[idPOS].chunkX - 1] + "x" + [players[idPOS].chunkY]].chunk[7][players[idPOS].chunkGridY].tree === true){
+  				chunks[[players[idPOS].chunkX - 1] + "x" + [players[idPOS].chunkY]].chunk[7][players[idPOS].chunkGridY].tree = false;
+  				chunks[[players[idPOS].chunkX - 1] + "x" + [players[idPOS].chunkY]].chunk[7][players[idPOS].chunkGridY].isSolid = false;
+  				chunks[[players[idPOS].chunkX - 1] + "x" + [players[idPOS].chunkY]].chunk[7][players[idPOS].chunkGridY].isEmpty = true;
+
+  				players[idPOS].wood += 1;
+  				
+  			}
   		}
+  	})
+
+  	socket.on('placeEast', function(){
+  		var idPOS = playerIDs.indexOf(socket.id);
+  		if(players[idPOS].wood > 0){
+
+	  		if(players[idPOS].chunkGridX != 7){
+	  			if(chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX + 1][players[idPOS].chunkGridY].isEmpty === true){
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX + 1][players[idPOS].chunkGridY].wall = true;
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX + 1][players[idPOS].chunkGridY].isSolid = true;
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX + 1][players[idPOS].chunkGridY].isEmpty = false;
+
+	  				players[idPOS].wood -= 1;
+	  			}
+	  		} else{
+	  			if(chunks[[players[idPOS].chunkX + 1] + "x" + [players[idPOS].chunkY]].chunk[0][players[idPOS].chunkGridY].isEmpty === true){
+	  				chunks[[players[idPOS].chunkX + 1] + "x" + [players[idPOS].chunkY]].chunk[0][players[idPOS].chunkGridY].wall = true;
+	  				chunks[[players[idPOS].chunkX + 1] + "x" + [players[idPOS].chunkY]].chunk[0][players[idPOS].chunkGridY].isSolid = true;
+	  				chunks[[players[idPOS].chunkX + 1] + "x" + [players[idPOS].chunkY]].chunk[0][players[idPOS].chunkGridY].isEmpty = false;
+
+	  				players[idPOS].wood -= 1;
+	  			}
+	  		}
+	  	}
+  	})
+  	socket.on('placeSouth', function(){
+  		var idPOS = playerIDs.indexOf(socket.id);
+  		if(players[idPOS].wood > 0){
+
+	  		if(players[idPOS].chunkGridY != 7){
+	  			if(chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY+1].isEmpty === true){
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY+1].wall = true;
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY+1].isSolid = true;
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY+1].isEmpty = false;
+
+
+	  				players[idPOS].wood -= 1;
+
+	  			}
+	  		} else{
+	  			if(chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY+1]].chunk[players[idPOS].chunkGridX][0].isEmpty === true){
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY+1]].chunk[players[idPOS].chunkGridX][0].wall = true;
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY+1]].chunk[players[idPOS].chunkGridX][0].isSolid = true;
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY+1]].chunk[players[idPOS].chunkGridX][0].isEmpty = false;
+
+
+	  				players[idPOS].wood -= 1;
+
+	  			}
+	  		}
+	  	}
+  	})
+  	socket.on('placeNorth', function(){
+  		var idPOS = playerIDs.indexOf(socket.id);
+  		if(players[idPOS].wood > 0){
+	  		if(players[idPOS].chunkGridY != 0){ 
+	  			if(chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY-1].isEmpty === true){
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY-1].wall = true;
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY-1].isSolid = true;
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX][players[idPOS].chunkGridY-1].isEmpty = false;
+
+	  				players[idPOS].wood -= 1;
+
+	  			}
+	  		} else{
+	  			if(chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY-1]].chunk[players[idPOS].chunkGridX][7].isEmpty === true){
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY-1]].chunk[players[idPOS].chunkGridX][7].wall = true;
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY-1]].chunk[players[idPOS].chunkGridX][7].isSolid = true;
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY-1]].chunk[players[idPOS].chunkGridX][7].isEmpty = false;
+
+	  				players[idPOS].wood -= 1;
+
+	  			}
+	  		}
+
+	  	}
+  		
+
+  		
+  	})
+  	socket.on('placeWest', function(){
+  		var idPOS = playerIDs.indexOf(socket.id);
+  		if(players[idPOS].wood > 0){
+	  		if(players[idPOS].chunkGridX != 0){
+	  			if(chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX - 1][players[idPOS].chunkGridY].isEmpty === true){
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX - 1][players[idPOS].chunkGridY].wall = true;
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX - 1][players[idPOS].chunkGridY].isSolid = true;
+	  				chunks[[players[idPOS].chunkX] + "x" + [players[idPOS].chunkY]].chunk[players[idPOS].chunkGridX - 1][players[idPOS].chunkGridY].isEmpty = false;
+
+	  				players[idPOS].wood -= 1;
+
+	  			}
+	  		} else{
+	  			if(chunks[[players[idPOS].chunkX - 1] + "x" + [players[idPOS].chunkY]].chunk[7][players[idPOS].chunkGridY].isEmpty === true){
+	  				chunks[[players[idPOS].chunkX - 1] + "x" + [players[idPOS].chunkY]].chunk[7][players[idPOS].chunkGridY].wall = true;
+	  				chunks[[players[idPOS].chunkX - 1] + "x" + [players[idPOS].chunkY]].chunk[7][players[idPOS].chunkGridY].isSolid = true;
+	  				chunks[[players[idPOS].chunkX - 1] + "x" + [players[idPOS].chunkY]].chunk[7][players[idPOS].chunkGridY].isEmpty = false;
+
+	  				players[idPOS].wood -= 1;
+	  				
+	  			}
+	  		}
+	  	}
   	})
 
   	socket.on('disconnect', function(){
@@ -218,12 +499,12 @@ function move(i){
 				var moveRight = true;
 				if (players[i].x % 40 === 38 || players[i].x % 40 === -2) {
 					if(playerRender[i]["0x0"].chunk[players[i].chunkGridX + 1] === undefined){
-						if (playerRender[i]["1x0"].chunk[0][players[i].chunkGridY].tree === true){
+						if (playerRender[i]["1x0"].chunk[0][players[i].chunkGridY].isSolid === true){
 			  				moveRight = false;
 			  			}
 					} else {
 			  		
-			  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX + 1][players[i].chunkGridY].tree === true){
+			  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX + 1][players[i].chunkGridY].isSolid === true){
 			  			moveRight = false;
 			  		}
 			  	}
@@ -236,14 +517,14 @@ function move(i){
 
 	  		if (players[i].left === true && players[i].x > (Math.abs(borderRadius) * -1) * 40){
 	  			var moveLeft = true;
-				if (players[i].x % 40 === 2 || players[i].x % 40 === -38) {
+				if (players[i].x % 40 === 2 || players[i].x % 40 <= -38) {
 					if(playerRender[i]["0x0"].chunk[players[i].chunkGridX - 1] === undefined){
-						if (playerRender[i]["-1x0"].chunk[7][players[i].chunkGridY].tree === true){
+						if (playerRender[i]["-1x0"].chunk[7][players[i].chunkGridY].isSolid === true){
 			  				moveLeft = false;
 			  			}
 					} else {
 			  		
-			  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX - 1][players[i].chunkGridY].tree === true){
+			  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX - 1][players[i].chunkGridY].isSolid === true){
 			  			moveLeft = false;
 			  		}
 			  	}
@@ -259,12 +540,12 @@ function move(i){
 	  			var moveUp = true;
 				if (players[i].y % 40 === -38 || players[i].y % 40 === 2) {
 					if(playerRender[i]["0x0"].chunk[players[i].chunkGridY - 1] === undefined){
-						if (playerRender[i]["0x-1"].chunk[players[i].chunkGridX][7].tree === true){
+						if (playerRender[i]["0x-1"].chunk[players[i].chunkGridX][7].isSolid === true){
 			  				moveUp = false;
 			  			}
 					} else {
 			  		
-			  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX][players[i].chunkGridY-1].tree === true){
+			  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX][players[i].chunkGridY-1].isSolid === true){
 			  			moveUp = false;
 			  		}
 			  	}
@@ -280,12 +561,12 @@ function move(i){
 	  			var moveDown = true;
 				if (players[i].y % 40 === -2 || players[i].y % 40 === 38) {
 					if(playerRender[i]["0x0"].chunk[players[i].chunkGridY + 1] === undefined){
-						if (playerRender[i]["0x1"].chunk[players[i].chunkGridX][0].tree === true){
+						if (playerRender[i]["0x1"].chunk[players[i].chunkGridX][0].isSolid === true){
 			  				moveDown = false;
 			  			}
 					} else {
 			  		
-			  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX][players[i].chunkGridY+1].tree === true){
+			  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX][players[i].chunkGridY+1].isSolid === true){
 			  			moveDown = false;
 			  		}
 			  	}
@@ -313,11 +594,6 @@ function move(i){
 	  		}	
 	  		
 
-	  		// players[i].chunkGridX
-
-	  		// //wrong
-	  		// players[i].chunkGridX = Math.abs(players.gridX % 8);
-	  		// players[i].chunkGridY = Math.abs(players.gridY % 8);
 }
 
 function selectPlayers(){
