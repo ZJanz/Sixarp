@@ -1,38 +1,15 @@
 * { padding: 0; margin: 0; }
 canvas { background: #eee; display: block; margin: 0 auto; }
 
-#eastChop {
-	display:none;
-}
-
-#northChop {
-	display:none;
-}
-
-#westChop {
-	display:none;
-}
-
-#southChop {
-	display:none;
-}
-
-#eastPlace {
-	display:none;
-}
-
-#northPlace {
-	display:none;
-}
-
-#westPlace {
-	display:none;
-}
-
-#southPlace {
-	display:none;
-}
 
 #chop {
+	display:none;
+}
+
+#wall {
+	display:none;
+}
+
+#fight {
 	display:none;
 }
