@@ -16,7 +16,6 @@ var downPressed = false;
 
 var gridSize = 40;
 
-var trees = [];
 
 var players = [];
 
@@ -109,17 +108,6 @@ function render(x, y){
   else {return false}
 }
 
-
-// function drawTrees(){
-//   for(var i = 0; i < trees.length; i++){
-//       ctx.beginPath();
-//       ctx.rect(trees[i].gridX * gridSize - players[currentPlayer].x + 320, trees[i].gridY * gridSize - players[currentPlayer].y + 240, gridSize, gridSize)
-//       ctx.fillStyle = "rgb(0, 255, 0)";
-//       ctx.fill();
-//       ctx.closePath();
-//   }
-// }
-
 chunkSize = 8;
 
 var chunkInfo = {};
@@ -134,113 +122,6 @@ socket.on('renderedChunks', function(rendered){
 
 function checkSuroundings(){
   document.getElementById("woodAmount").innerHTML = players[currentPlayer].wood;
-
-  if(players[currentPlayer].chunkGridX === 7) {
-
-    if(chunkInfo[1+"x"+0].chunk[7][players[currentPlayer].chunkGridY].isEmpty === true && players[currentPlayer].wood > 0){
-      document.getElementById("eastPlace").style.display = "inline";
-    } else {
-      document.getElementById("eastPlace").style.display = "none";
-    }
-
-    if(chunkInfo[1+"x"+0].chunk[0][players[currentPlayer].chunkGridY].tree === true){
-      document.getElementById("eastChop").style.display = "inline";
-    } else {
-      document.getElementById("eastChop").style.display = "none";
-    }
-  } else {
-
-    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX + 1][players[currentPlayer].chunkGridY].isEmpty === true && players[currentPlayer].wood > 0){
-      document.getElementById("eastPlace").style.display = "inline";
-    } else {
-      document.getElementById("eastPlace").style.display = "none";
-    }
-
-    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX + 1][players[currentPlayer].chunkGridY].tree === true){
-      document.getElementById("eastChop").style.display = "inline";
-    } else {
-      document.getElementById("eastChop").style.display = "none";
-    }
-  }
-
-  if(players[currentPlayer].chunkGridX === 0) {
-    if(chunkInfo[-1+"x"+0].chunk[7][players[currentPlayer].chunkGridY].isEmpty === true && players[currentPlayer].wood > 0){
-      document.getElementById("westPlace").style.display = "inline";
-    } else {
-      document.getElementById("westPlace").style.display = "none";
-    }
-
-    if(chunkInfo[-1+"x"+0].chunk[7][players[currentPlayer].chunkGridY].tree === true){
-      document.getElementById("westChop").style.display = "inline";
-    } else {
-      document.getElementById("westChop").style.display = "none";
-    }
-  } else {
-    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX - 1][players[currentPlayer].chunkGridY].tree === true){
-      document.getElementById("westChop").style.display = "inline";
-    } else {
-      document.getElementById("westChop").style.display = "none";
-    }
-
-    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX - 1][players[currentPlayer].chunkGridY].isEmpty === true && players[currentPlayer].wood > 0){
-      document.getElementById("westPlace").style.display = "inline";
-    } else {
-      document.getElementById("westPlace").style.display = "none";
-    }
-  }
-
-  if(players[currentPlayer].chunkGridY === 0) {
-    if(chunkInfo[0+"x"+-1].chunk[players[currentPlayer].chunkGridX][7].tree === true){
-      document.getElementById("northChop").style.display = "inline";
-    } else {
-      document.getElementById("northChop").style.display = "none";
-    }
-
-    if(chunkInfo[0+"x"+-1].chunk[players[currentPlayer].chunkGridX][7].isEmpty === true && players[currentPlayer].wood > 0){
-      document.getElementById("northPlace").style.display = "inline";
-    } else {
-      document.getElementById("northPlace").style.display = "none";
-    }
-  } else {
-    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX][players[currentPlayer].chunkGridY-1].tree === true){
-      document.getElementById("northChop").style.display = "inline";
-    } else {
-      document.getElementById("northChop").style.display = "none";
-    }
-
-    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX][players[currentPlayer].chunkGridY-1].isEmpty === true && players[currentPlayer].wood > 0){
-      document.getElementById("northPlace").style.display = "inline";
-    } else {
-      document.getElementById("northPlace").style.display = "none";
-    }
-  }
-
-  if(players[currentPlayer].chunkGridY === 7) {
-    if(chunkInfo[0+"x"+1].chunk[players[currentPlayer].chunkGridX][0].tree === true){
-      document.getElementById("southChop").style.display = "inline";
-    } else {
-      document.getElementById("southChop").style.display = "none";
-    }
-
-    if(chunkInfo[0+"x"+1].chunk[players[currentPlayer].chunkGridX][0].isEmpty === true && players[currentPlayer].wood > 0){
-      document.getElementById("southPlace").style.display = "inline";
-    } else {
-      document.getElementById("southPlace").style.display = "none";
-    }
-
-  } else {
-    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX][players[currentPlayer].chunkGridY+1].tree === true){
-      document.getElementById("southChop").style.display = "inline";
-    } else {
-      document.getElementById("southChop").style.display = "none";
-    }
-
-    if(chunkInfo[0+"x"+0].chunk[players[currentPlayer].chunkGridX][players[currentPlayer].chunkGridY+1].isEmpty === true && players[currentPlayer].wood > 0){
-      document.getElementById("southPlace").style.display = "inline";
-    } else {
-      document.getElementById("southPlace").style.display = "none";
-    }
-  }
 }
 
 function drawChunk(){
@@ -278,10 +159,22 @@ function drawChunk(){
               document.getElementById("gridValue").innerHTML = "tree = " + chosenGrid.tree + " isSolid = " + chosenGrid.isSolid + " isEmpty = " + chosenGrid.isEmpty + " chunkX = " + clickedArea.chunkClickedX + " chunkY = " + clickedArea.chunkClickedY + " gridX = " + clickedArea.chunkGridXClicked + " gridY = " + clickedArea.chunkGridYClicked;
               if(chosenGrid.tree === true){
                 document.getElementById("chop").style.display = "inline";
-              }
-              else {
+              } else {
                 document.getElementById("chop").style.display = "none";
               }
+              if(chosenGrid.isEmpty === true){
+                document.getElementById("wall").style.display = "inline";
+              } else {
+                document.getElementById("wall").style.display = "none";
+              }
+              if(chosenGrid.occupiedBy != undefined){
+                document.getElementById("fight").style.display = "inline";
+              } else {
+                document.getElementById("fight").style.display = "none";
+              }
+              // console.log(chosenGrid.occupiedBy)
+
+
         }
       }
     }
@@ -339,52 +232,24 @@ function draw() {
 
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
-document.getElementById("eastChop").addEventListener("click", chopEastHandler);
-document.getElementById("westChop").addEventListener("click", chopWestHandler);
-document.getElementById("northChop").addEventListener("click", chopNorthHandler);
-document.getElementById("southChop").addEventListener("click", chopSouthHandler);
-
-document.getElementById("eastPlace").addEventListener("click", placeEastHandler);
-document.getElementById("westPlace").addEventListener("click", placeWestHandler);
-document.getElementById("northPlace").addEventListener("click", placeNorthHandler);
-document.getElementById("southPlace").addEventListener("click", placeSouthHandler);
 document.getElementById("chop").addEventListener("click", chopHandler);
+document.getElementById("wall").addEventListener("click", placeWallHandler);
+document.getElementById("fight").addEventListener("click", fightHandler);
+
+
+function fightHandler(){
+  socket.emit('fight', clickedArea);
+}
 
 function chopHandler(){
   socket.emit('chop', clickedArea);
 }
 
-function chopEastHandler(){
-  socket.emit('chopEast');
+function placeWallHandler(){
+  socket.emit('placeWall', clickedArea)
 }
 
-function chopWestHandler(){
-  socket.emit('chopWest');
-}
-
-function chopNorthHandler(){
-  socket.emit('chopNorth');
-}
-
-function chopSouthHandler(){
-  socket.emit('chopSouth');
-}
-
-function placeEastHandler(){
-  socket.emit('placeEast');
-}
-
-function placeWestHandler(){
-  socket.emit('placeWest');
-}
-
-function placeNorthHandler(){
-  socket.emit('placeNorth');
-}
-
-function placeSouthHandler(){
-  socket.emit('placeSouth');
-}
+  
 
 function keyDownHandler(e) {
     if(e.key == "Right" || e.key == "ArrowRight") {
