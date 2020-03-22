@@ -238,7 +238,7 @@ io.on('connection', function(socket){
 
 
 		  		if(players[idPOS].chunkX+1 === clickedArea.chunkClickedX && players[idPOS].chunkY -1 === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - 8 - range){
+			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - 8 - range){
 			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy != undefined){
 				  			players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health -= 1;
 				  			console.log("hit");
