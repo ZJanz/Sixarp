@@ -140,6 +140,7 @@ io.on('connection', function(socket){
   		health : 10
   	});
   	io.to(`${socket.id}`).emit('ID', players[players.length-1].ID);
+  	loadChunk(playerCount);
   	playerCount++;
   	var idPOS = playerIDs.indexOf(socket.id);
   	socket.on('movement', function(state){
@@ -151,373 +152,45 @@ io.on('connection', function(socket){
   	socket.on('fight', function(clickedArea){
   	var range = 1;
   	var damage = 1;
-  		if(players[idPOS].chunkX+1 === clickedArea.chunkClickedX && players[idPOS].chunkY === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy != undefined){
-				  			players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health -= 1;
-				  			console.log("hit");
-				  			if(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health <= 0){
-				  					death(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].ID);
-				  				
-				  			}
 
-			  			}
-		  			}
-		  		}
+  	if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy != undefined && isBlockInRange(range, idPOS, clickedArea) === true){
+			players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health -= 1;
+			console.log("hit");
+			if(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health <= 0){
+					death(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].ID);
+				
+			}
 
-		  		if(players[idPOS].chunkX-1 === clickedArea.chunkClickedX && players[idPOS].chunkY === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy != undefined){
-				  			players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health -= 1;
-				  			console.log("hit");
-				  			if(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health <= 0){
-				  					death(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].ID);
-				  				
-				  			}
-
-			  			}
-		  			}
-		  		}
-
-		  		if(players[idPOS].chunkX === clickedArea.chunkClickedX && players[idPOS].chunkY - 1 === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - 8 - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy != undefined){
-				  			players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health -= 1;
-				  			console.log("hit");
-				  			if(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health <= 0){
-				  					death(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].ID);
-				  					
-				  			}
-				  			
-			  			}
-		  			}
-		  		}
-
-		  		if(players[idPOS].chunkX === clickedArea.chunkClickedX && players[idPOS].chunkY + 1 === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked + 8 - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy != undefined){
-				  			players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health -= 1;
-				  			console.log("hit");
-				  			if(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health <= 0){
-				  					death(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].ID);
-				  				
-				  			}
-				  			
-			  			}
-		  			}
-		  		}
-
-		  		if(players[idPOS].chunkX-1 === clickedArea.chunkClickedX && players[idPOS].chunkY - 1 === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - 8 - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy != undefined){
-				  			players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health -= 1;
-				  			console.log("hit");
-				  			if(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health <= 0){
-				  					death(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].ID);
-				  				
-				  			}
-				  			
-				  			
-			  			}
-		  			}
-		  		}
-
-		  		if(players[idPOS].chunkX-1 === clickedArea.chunkClickedX && players[idPOS].chunkY + 1 === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked + 8 - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy != undefined){
-				  			players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health -= 1;
-				  			console.log("hit");
-				  			if(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health <= 0){
-				  					death(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].ID);
-				  					
-				  			}
-				  			
-			  			}
-		  			}
-		  		}
-
-
-		  		if(players[idPOS].chunkX+1 === clickedArea.chunkClickedX && players[idPOS].chunkY -1 === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - 8 - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy != undefined){
-				  			players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health -= 1;
-				  			console.log("hit");
-				  				if(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health <= 0){
-				  					death(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].ID);
-				  					
-				  				}
-				  			
-				  			
-			  			}
-		  			}
-		  		}
-
-		  		if(players[idPOS].chunkX+1 === clickedArea.chunkClickedX && players[idPOS].chunkY + 1 === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked + 8 - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy != undefined){
-				  			players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health -= 1;
-				  			console.log("hit");
-				  			if(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health <= 0){
-				  					death(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].ID);
-				  					
-				  			}
-
-				  			
-			  			}
-		  			}
-		  		}
-
-
-
-		  		if(players[idPOS].chunkX === clickedArea.chunkClickedX && players[idPOS].chunkY === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy != undefined){
-				  			players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health -= 1;
-				  			console.log("hit");
-				  			if(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health <= 0){
-				  					death(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].ID);
-				  			}
-
-			  			}
-			  		}
-			  	}
+		}
 			
   	})
 
 
 
 
-  	socket.on('chop', function(chopArea){
+  	socket.on('chop', function(clickedArea){
   		var range = 1;
-  		if(players[idPOS].chunkX+1 === chopArea.chunkClickedX && players[idPOS].chunkY === chopArea.chunkClickedY){
-	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - range){
-	  			if(chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree === true){
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
+  		if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].tree === true && isBlockInRange(range, idPOS, clickedArea) === true){
+  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].tree=false;
+		  	chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid=false;
+		  	chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty=true;
 
-		  			players[idPOS].wood += 1;
-	  			}
-  			}
+		  	players[idPOS].wood += 1;
   		}
-
-  		if(players[idPOS].chunkX-1 === chopArea.chunkClickedX && players[idPOS].chunkY === chopArea.chunkClickedY){
-	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - range){
-	  			if(chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree === true){
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
-
-		  			players[idPOS].wood += 1;
-	  			}
-  			}
-  		}
-
-  		if(players[idPOS].chunkX === chopArea.chunkClickedX && players[idPOS].chunkY - 1 === chopArea.chunkClickedY){
-	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - 8 - range){
-	  			if(chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree === true){
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
-
-		  			players[idPOS].wood += 1;
-	  			}
-  			}
-  		}
-
-  		if(players[idPOS].chunkX === chopArea.chunkClickedX && players[idPOS].chunkY + 1 === chopArea.chunkClickedY){
-	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked + 8 - range){
-	  			if(chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree === true){
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
-
-		  			players[idPOS].wood += 1;
-	  			}
-  			}
-  		}
-
-  		if(players[idPOS].chunkX-1 === chopArea.chunkClickedX && players[idPOS].chunkY - 1 === chopArea.chunkClickedY){
-	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - 8 - range){
-	  			if(chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree === true){
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
-
-		  			players[idPOS].wood += 1;
-	  			}
-  			}
-  		}
-
-  		if(players[idPOS].chunkX-1 === chopArea.chunkClickedX && players[idPOS].chunkY + 1 === chopArea.chunkClickedY){
-	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked + 8 - range){
-	  			if(chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree === true){
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
-
-		  			players[idPOS].wood += 1;
-	  			}
-  			}
-  		}
-
-
-  		if(players[idPOS].chunkX+1 === chopArea.chunkClickedX && players[idPOS].chunkY -1 === chopArea.chunkClickedY){
-	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - 8 - range){
-	  			if(chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree === true){
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
-
-		  			players[idPOS].wood += 1;
-	  			}
-  			}
-  		}
-
-  		if(players[idPOS].chunkX+1 === chopArea.chunkClickedX && players[idPOS].chunkY + 1 === chopArea.chunkClickedY){
-	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked + 8 - range){
-	  			if(chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree === true){
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
-
-		  			players[idPOS].wood += 1;
-	  			}
-  			}
-  		}
-
-
-
-  		if(players[idPOS].chunkX === chopArea.chunkClickedX && players[idPOS].chunkY === chopArea.chunkClickedY){
-	  		if(players[idPOS].chunkGridX <= chopArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - range){
-	  			if(chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree === true){
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].tree=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isSolid=false;
-		  			chunks[chopArea.chunkClickedX + "x" + chopArea.chunkClickedY].chunk[chopArea.chunkGridXClicked][chopArea.chunkGridYClicked].isEmpty=true;
-
-
-		  			players[idPOS].wood += 1;
-	  			}
-	  		}
-	  	}
+  		
 
   	})
 
 	socket.on('placeWall', function(clickedArea){
 	  		var range = 1;
-	  		if(players[idPOS].wood > 0){
-		  		if(players[idPOS].chunkX+1 === clickedArea.chunkClickedX && players[idPOS].chunkY === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].wall=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty=false;
+	  		if(players[idPOS].wood > 0 && chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty === true && isBlockInRange(range, idPOS, clickedArea) === true){
+	  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].wall=true;
+				chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid=true;
+				chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty=false;
 
-				  			players[idPOS].wood -= 1;
-			  			}
-		  			}
-		  		}
-
-		  		if(players[idPOS].chunkX-1 === clickedArea.chunkClickedX && players[idPOS].chunkY === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].wall=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty=false;
-
-				  			players[idPOS].wood -= 1;
-			  			}
-		  			}
-		  		}
-
-		  		if(players[idPOS].chunkX === clickedArea.chunkClickedX && players[idPOS].chunkY - 1 === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - 8 - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].wall=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty=false;
-
-				  			players[idPOS].wood -= 1;
-			  			}
-		  			}
-		  		}
-
-		  		if(players[idPOS].chunkX === clickedArea.chunkClickedX && players[idPOS].chunkY + 1 === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked + 8 - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].wall=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty=false;
-
-				  			players[idPOS].wood -= 1;
-			  			}
-		  			}
-		  		}
-
-		  		if(players[idPOS].chunkX-1 === clickedArea.chunkClickedX && players[idPOS].chunkY - 1 === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - 8 - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].wall=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty=false;
-
-				  			players[idPOS].wood -= 1;
-			  			}
-		  			}
-		  		}
-
-		  		if(players[idPOS].chunkX-1 === clickedArea.chunkClickedX && players[idPOS].chunkY + 1 === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked + 8 - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].wall=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty=false;
-
-				  			players[idPOS].wood -= 1;
-			  			}
-		  			}
-		  		}
-
-
-		  		if(players[idPOS].chunkX+1 === clickedArea.chunkClickedX && players[idPOS].chunkY -1 === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - 8 - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].wall=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty=false;
-
-				  			players[idPOS].wood -= 1;
-			  			}
-		  			}
-		  		}
-
-		  		if(players[idPOS].chunkX+1 === clickedArea.chunkClickedX && players[idPOS].chunkY + 1 === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked + 8 - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].wall=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty=false;
-
-				  			players[idPOS].wood -= 1;
-			  			}
-		  			}
-		  		}
-
-
-
-		  		if(players[idPOS].chunkX === clickedArea.chunkClickedX && players[idPOS].chunkY === clickedArea.chunkClickedY){
-			  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - range){
-			  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].wall=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid=true;
-				  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty=false;
-
-
-				  			players[idPOS].wood -= 1;
-			  			}
-			  		}
-			  	}
-			}
+				players[idPOS].wood -= 1;
+	  		}
+	  		
 
 	  	})
   	
@@ -528,6 +201,10 @@ io.on('connection', function(socket){
 	})
 
 });
+
+
+
+
 
 
 
@@ -643,6 +320,85 @@ function move(i){
 
 
   	}
+
+
+function isBlockInRange(r, idPOS, clickedArea){
+	var range = r;
+  			if(players[idPOS].chunkX+1 === clickedArea.chunkClickedX && players[idPOS].chunkY === clickedArea.chunkClickedY){
+	  			if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - range){
+	  				if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
+		  				return true;
+	  			}
+  			}
+  		}
+
+  		if(players[idPOS].chunkX-1 === clickedArea.chunkClickedX && players[idPOS].chunkY === clickedArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - range){
+	  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
+		  			return true;
+	  			}
+  			}
+  		}
+
+  		if(players[idPOS].chunkX === clickedArea.chunkClickedX && players[idPOS].chunkY - 1 === clickedArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - 8 - range){
+	  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
+		  			return true;
+	  			}
+  			}
+  		}
+
+  		if(players[idPOS].chunkX === clickedArea.chunkClickedX && players[idPOS].chunkY + 1 === clickedArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked + 8 - range){
+	  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
+		  			return true;
+	  			}
+  			}
+  		}
+
+  		if(players[idPOS].chunkX-1 === clickedArea.chunkClickedX && players[idPOS].chunkY - 1 === clickedArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - 8 - range){
+	  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
+		  			return true;
+	  			}
+  			}
+  		}
+
+  		if(players[idPOS].chunkX-1 === clickedArea.chunkClickedX && players[idPOS].chunkY + 1 === clickedArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked - 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked + 8 - range){
+	  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
+		  			return true;
+	  			}
+  			}
+  		}
+
+
+  		if(players[idPOS].chunkX+1 === clickedArea.chunkClickedX && players[idPOS].chunkY -1 === clickedArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - 8 - range){
+	  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
+		  			return true;
+	  			}
+  			}
+  		}
+
+  		if(players[idPOS].chunkX+1 === clickedArea.chunkClickedX && players[idPOS].chunkY + 1 === clickedArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + 8 + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked + 8 - range){
+	  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
+		  			return true;
+	  			}
+  			}
+  		}
+
+
+
+  		if(players[idPOS].chunkX === clickedArea.chunkClickedX && players[idPOS].chunkY === clickedArea.chunkClickedY){
+	  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked + range && players[idPOS].chunkGridY >= clickedArea.chunkGridYClicked - range){
+	  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
+		  			return true;
+	  			}
+	  		}
+	  	}
+	}
   		
 
 function selectPlayers(){
