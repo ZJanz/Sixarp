@@ -41,11 +41,11 @@ function createChunk(cX, cY){
 }
 
 
+
 function loadChunk(p){
 	var positionX = players[p].gridX;
 	var positionY = players[p].gridY;
 
-	var lastPlayerRender = playerRender[p];
 	playerRender[p] = {};
 		for(x = -1; x <=1; x++){
 			for(y = -1; y <=1; y++){
@@ -56,7 +56,7 @@ function loadChunk(p){
 				}
 
 				
-
+				//consider changing to an array that pushes chunks.
 				playerRender[p][x+"x"+y] = chunks[currentChunk.chunkX + "x" + currentChunk.chunkY];
 
 					if(playerRender[p][x+"x"+y] === undefined){
@@ -65,14 +65,6 @@ function loadChunk(p){
 					}
 				}
 			}
-
-		if (lastPlayerRender != playerRender[p]){
-			emitChunk(p);
-		}
-
-}
-
-function emitChunk(p){
 	io.to(`${playerIDs[p]}`).emit('renderedChunks', playerRender[p])
 }
 
@@ -148,8 +140,6 @@ io.on('connection', function(socket){
   		health : 10
   	});
   	io.to(`${socket.id}`).emit('ID', players[players.length-1].ID);
-  	loadChunk(playerCount);
-  	emitChunk(playerCount);
   	playerCount++;
   	var idPOS = playerIDs.indexOf(socket.id);
   	socket.on('movement', function(state){
@@ -167,7 +157,7 @@ io.on('connection', function(socket){
 			console.log("hit");
 			if(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].health <= 0){
 					death(players[chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy].ID);
-				
+					chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].occupiedBy = undefined;
 			}
 
 		}
@@ -222,7 +212,7 @@ function move(i){
 		delete chunks[players[i].chunkX + "x" + players[i].chunkY].chunk[players[i].chunkGridX][players[i].chunkGridY].occupiedBy;
 		// chunks[players[i].chunkX + "x" + players[i].chunkY].chunk[players[i].chunkGridX][players[i].chunkGridY].isSolid = false;
 
-		updateChunks = false;
+	
 
 
 		if (players[i].right === true && players[i].x < borderRadius * 40){
@@ -232,7 +222,6 @@ function move(i){
 					if (playerRender[i]["1x0"].chunk[0][players[i].chunkGridY].isSolid === true || playerRender[i]["1x0"].chunk[0][players[i].chunkGridY].occupiedBy != undefined){
 		  				moveRight = false;
 		  			}
-		  			updateChunks = true;
 				} else {
 		  		
 		  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX + 1][players[i].chunkGridY].isSolid === true || playerRender[i]["0x0"].chunk[players[i].chunkGridX + 1][players[i].chunkGridY].occupiedBy != undefined){
@@ -253,7 +242,6 @@ function move(i){
 					if (playerRender[i]["-1x0"].chunk[7][players[i].chunkGridY].isSolid === true || playerRender[i]["-1x0"].chunk[7][players[i].chunkGridY].occupiedBy != undefined){
 		  				moveLeft = false;
 		  			}
-		  			updateChunks = true;
 				} else {
 		  		
 		  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX - 1][players[i].chunkGridY].isSolid === true || playerRender[i]["0x0"].chunk[players[i].chunkGridX - 1][players[i].chunkGridY].occupiedBy != undefined){
@@ -275,7 +263,6 @@ function move(i){
 					if (playerRender[i]["0x-1"].chunk[players[i].chunkGridX][7].isSolid === true || playerRender[i]["0x-1"].chunk[players[i].chunkGridX][7].occupiedBy != undefined){
 		  				moveUp = false;
 		  			}
-		  			updateChunks = true;
 				} else {
 		  		
 		  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX][players[i].chunkGridY-1].isSolid === true || playerRender[i]["0x0"].chunk[players[i].chunkGridX][players[i].chunkGridY-1].occupiedBy != undefined ){
@@ -297,7 +284,6 @@ function move(i){
 					if (playerRender[i]["0x1"].chunk[players[i].chunkGridX][0].isSolid === true || playerRender[i]["0x1"].chunk[players[i].chunkGridX][0].occupiedBy != undefined){
 		  				moveDown = false;
 		  			}
-		  			updateChunks = true;
 				} else {
 		  		
 		  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX][players[i].chunkGridY+1].isSolid === true || playerRender[i]["0x0"].chunk[players[i].chunkGridX][players[i].chunkGridY+1].occupiedBy != undefined ){
@@ -326,12 +312,11 @@ function move(i){
   		if (players[i].chunkGridY < 0){
   			players[i].chunkGridY += 8;
   		}
+
   		
   		chunks[players[i].chunkX + "x" + players[i].chunkY].chunk[players[i].chunkGridX][players[i].chunkGridY].occupiedBy = players[i].ID;
   		// chunks[players[i].chunkX + "x" + players[i].chunkY].chunk[players[i].chunkGridX][players[i].chunkGridY].isSolid = true;
-  		// if (updateChunks === true){
-  		// 	emitChunk(i);
-  		// }
+
 
   	}
 
@@ -388,7 +373,7 @@ function isBlockInRange(r, idPOS, clickedArea){
 
 
   		if(players[idPOS].chunkX+1 === clickedArea.chunkClickedX && players[idPOS].chunkY -1 === clickedArea.chunkClickedY){
-	  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= chopArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - 8 - range){
+	  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - 8 - range){
 	  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
 		  			return true;
 	  			}
@@ -417,8 +402,8 @@ function isBlockInRange(r, idPOS, clickedArea){
 
 function selectPlayers(){
 	for (var i=0; i < players.length; i++){
-		move(i);
 		loadChunk(i);
+		move(i);
 	}
 }
 
