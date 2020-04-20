@@ -47,21 +47,23 @@ function loadChunk(p){
 	var positionY = players[p].gridY;
 
 	playerRender[p] = {};
+	playerRender[p].cenChunkX = players[p].chunkX;
+	playerRender[p].cenChunkY = players[p].chunkY;
 		for(x = -1; x <=1; x++){
 			for(y = -1; y <=1; y++){
 
 				var currentChunk = {
-					chunkX : Math.floor(players[p].gridX/chunkSize) + x,
-					chunkY : Math.floor(players[p].gridY/chunkSize) + y
+					chunkX : players[p].chunkX + x,
+					chunkY : players[p].chunkY + y
 				}
 
 				
 				//consider changing to an array that pushes chunks.
-				playerRender[p][x+"x"+y] = chunks[currentChunk.chunkX + "x" + currentChunk.chunkY];
+				playerRender[p][currentChunk.chunkX+"x"+currentChunk.chunkY] = chunks[currentChunk.chunkX + "x" + currentChunk.chunkY];
 
-					if(playerRender[p][x+"x"+y] === undefined){
+					if(chunks[currentChunk.chunkX + "x" + currentChunk.chunkY] === undefined){
 						createChunk(currentChunk.chunkX, currentChunk.chunkY)
-						playerRender[p][x+"x"+y] = chunks[currentChunk.chunkX + "x" + currentChunk.chunkY];
+						playerRender[p][currentChunk.chunkX+"x"+currentChunk.chunkY] = chunks[currentChunk.chunkX + "x" + currentChunk.chunkY];
 					}
 				}
 			}
@@ -218,13 +220,13 @@ function move(i){
 		if (players[i].right === true && players[i].x < borderRadius * 40){
 			var moveRight = true;
 			if (players[i].x % 40 === 38 || players[i].x % 40 === -2) {
-				if(playerRender[i]["0x0"].chunk[players[i].chunkGridX + 1] === undefined){
-					if (playerRender[i]["1x0"].chunk[0][players[i].chunkGridY].isSolid === true || playerRender[i]["1x0"].chunk[0][players[i].chunkGridY].occupiedBy != undefined){
+				if(playerRender[i][players[i].chunkX + 'x' + players[i].chunkY].chunk[players[i].chunkGridX + 1] === undefined){
+					if (playerRender[i][(players[i].chunkX + 1) +"x" + players[i].chunkY].chunk[0][players[i].chunkGridY].isSolid === true || playerRender[i][(players[i].chunkX + 1) +"x" + players[i].chunkY].chunk[0][players[i].chunkGridY].occupiedBy != undefined){
 		  				moveRight = false;
 		  			}
 				} else {
 		  		
-		  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX + 1][players[i].chunkGridY].isSolid === true || playerRender[i]["0x0"].chunk[players[i].chunkGridX + 1][players[i].chunkGridY].occupiedBy != undefined){
+		  		if (playerRender[i][players[i].chunkX + 'x' + players[i].chunkY].chunk[players[i].chunkGridX + 1][players[i].chunkGridY].isSolid === true || playerRender[i][players[i].chunkX + 'x' + players[i].chunkY].chunk[players[i].chunkGridX + 1][players[i].chunkGridY].occupiedBy != undefined){
 		  			moveRight = false;
 		  		}
 		  	}
@@ -238,13 +240,13 @@ function move(i){
   		if (players[i].left === true && players[i].x > (Math.abs(borderRadius) * -1) * 40){
   			var moveLeft = true;
 			if (players[i].x % 40 === 2 || players[i].x % 40 <= -38) {
-				if(playerRender[i]["0x0"].chunk[players[i].chunkGridX - 1] === undefined){
-					if (playerRender[i]["-1x0"].chunk[7][players[i].chunkGridY].isSolid === true || playerRender[i]["-1x0"].chunk[7][players[i].chunkGridY].occupiedBy != undefined){
+				if(playerRender[i][players[i].chunkX + 'x' + players[i].chunkY].chunk[players[i].chunkGridX - 1] === undefined){
+					if (playerRender[i][(players[i].chunkX - 1) +"x" + players[i].chunkY].chunk[7][players[i].chunkGridY].isSolid === true || playerRender[i][(players[i].chunkX - 1) +"x" + players[i].chunkY].chunk[7][players[i].chunkGridY].occupiedBy != undefined){
 		  				moveLeft = false;
 		  			}
 				} else {
 		  		
-		  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX - 1][players[i].chunkGridY].isSolid === true || playerRender[i]["0x0"].chunk[players[i].chunkGridX - 1][players[i].chunkGridY].occupiedBy != undefined){
+		  		if (playerRender[i][players[i].chunkX + 'x' + players[i].chunkY].chunk[players[i].chunkGridX - 1][players[i].chunkGridY].isSolid === true || playerRender[i][players[i].chunkX + 'x' + players[i].chunkY].chunk[players[i].chunkGridX - 1][players[i].chunkGridY].occupiedBy != undefined){
 		  			moveLeft = false;
 		  		}
 		  	}
@@ -259,13 +261,13 @@ function move(i){
   		if (players[i].up === true && players[i].y > (Math.abs(borderRadius) * -1) * 40){
   			var moveUp = true;
 			if (players[i].y % 40 === -38 || players[i].y % 40 === 2) {
-				if(playerRender[i]["0x0"].chunk[players[i].chunkGridY - 1] === undefined){
-					if (playerRender[i]["0x-1"].chunk[players[i].chunkGridX][7].isSolid === true || playerRender[i]["0x-1"].chunk[players[i].chunkGridX][7].occupiedBy != undefined){
+				if(playerRender[i][players[i].chunkX + 'x' + players[i].chunkY].chunk[players[i].chunkGridY - 1] === undefined){
+					if (playerRender[i][players[i].chunkX + 'x' + (players[i].chunkY - 1)].chunk[players[i].chunkGridX][7].isSolid === true || playerRender[i][players[i].chunkX + 'x' + (players[i].chunkY - 1)].chunk[players[i].chunkGridX][7].occupiedBy != undefined){
 		  				moveUp = false;
 		  			}
 				} else {
 		  		
-		  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX][players[i].chunkGridY-1].isSolid === true || playerRender[i]["0x0"].chunk[players[i].chunkGridX][players[i].chunkGridY-1].occupiedBy != undefined ){
+		  		if (playerRender[i][players[i].chunkX + 'x' + players[i].chunkY].chunk[players[i].chunkGridX][players[i].chunkGridY-1].isSolid === true || playerRender[i][players[i].chunkX + 'x' + players[i].chunkY].chunk[players[i].chunkGridX][players[i].chunkGridY-1].occupiedBy != undefined ){
 		  			moveUp = false;
 		  		}
 		  	}
@@ -280,13 +282,13 @@ function move(i){
   		if (players[i].down === true && players[i].y < borderRadius * 40){
   			var moveDown = true;
 			if (players[i].y % 40 === -2 || players[i].y % 40 === 38) {
-				if(playerRender[i]["0x0"].chunk[players[i].chunkGridY + 1] === undefined){
-					if (playerRender[i]["0x1"].chunk[players[i].chunkGridX][0].isSolid === true || playerRender[i]["0x1"].chunk[players[i].chunkGridX][0].occupiedBy != undefined){
+				if(playerRender[i][players[i].chunkX + 'x' + players[i].chunkY].chunk[players[i].chunkGridY + 1] === undefined){
+					if (playerRender[i][players[i].chunkX + 'x' + (players[i].chunkY + 1)].chunk[players[i].chunkGridX][0].isSolid === true || playerRender[i][players[i].chunkX + 'x' + (players[i].chunkY + 1)].chunk[players[i].chunkGridX][0].occupiedBy != undefined){
 		  				moveDown = false;
 		  			}
 				} else {
 		  		
-		  		if (playerRender[i]["0x0"].chunk[players[i].chunkGridX][players[i].chunkGridY+1].isSolid === true || playerRender[i]["0x0"].chunk[players[i].chunkGridX][players[i].chunkGridY+1].occupiedBy != undefined ){
+		  		if (playerRender[i][players[i].chunkX + 'x' + players[i].chunkY].chunk[players[i].chunkGridX][players[i].chunkGridY+1].isSolid === true || playerRender[i][players[i].chunkX + 'x' + players[i].chunkY].chunk[players[i].chunkGridX][players[i].chunkGridY+1].occupiedBy != undefined ){
 		  			moveDown = false;
 		  		}
 		  	}
