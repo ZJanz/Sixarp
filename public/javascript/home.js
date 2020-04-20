@@ -115,7 +115,7 @@ var chunkInfo = {};
 socket.on('renderedChunks', function(rendered){
   for(x = -1; x <=1; x++){
       for(y = -1; y <=1; y++){
-      chunkInfo[x+"x"+y] = rendered[x+"x"+y];
+      chunkInfo[x+"x"+y] = rendered[(x + rendered.cenChunkX)+"x"+(y + rendered.cenChunkY)];
     }
   }
 });
