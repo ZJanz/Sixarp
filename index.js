@@ -401,18 +401,42 @@ function isBlockInRange(r, idPOS, clickedArea){
 	  	}
 	}
   		
+var connectionPinged = {};
+
+function selectPlayersLC(){
+		for (var i=0; i < players.length; i++){
+			//initally loads the chunks reguardless of tick value to prevent errors
+			if(connectionPinged[i] != true){
+					loadChunk(i);
+					connectionPinged[i] = true;
+				} else if(tick === 0) {
+					loadChunk(i);
+				} 
+			}
+		tick++;
+		//tick value determines how often chunks are loaded for all players, reduces lag significantly
+		if (tick === 200) {
+			tick = 0;
+		}
+
+	}
+
 
 function selectPlayers(){
 	for (var i=0; i < players.length; i++){
-		loadChunk(i);
 		move(i);
 	}
 }
 
+var tick = 0;
 function ping(){
+
+	selectPlayersLC();
 	selectPlayers();
-	// growTree();
 	emitInfo();
+	
+	
+
 }
 
 var interval = setInterval(ping, 10);
