@@ -34,6 +34,7 @@ function createChunk(cX, cY){
 					chunkInfo.chunk[x][y].tree = true;
 					chunkInfo.chunk[x][y].isEmpty = false;
 					chunkInfo.chunk[x][y].isSolid = true;
+					chunkInfo.chunk[x][y].dura = 100;
 				}
 			}
 		}
@@ -172,11 +173,15 @@ io.on('connection', function(socket){
   	socket.on('chop', function(clickedArea){
   		var range = 1;
   		if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].tree === true && isBlockInRange(range, idPOS, clickedArea) === true){
-  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].tree=false;
-		  	chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid=false;
-		  	chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty=true;
 
-		  	players[idPOS].wood += 1;
+  			mining(clickedArea.chunkClickedX, clickedArea.chunkClickedY, clickedArea.chunkGridXClicked, clickedArea.chunkGridYClicked, playerIDs.indexOf(socket.id));
+
+  			
+  			// chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].tree=false;
+		  	// chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid=false;
+		  	// chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty=true;
+
+		  	// players[idPOS].wood += 1;
   		}
   		
 
@@ -205,7 +210,14 @@ io.on('connection', function(socket){
 
 
 
+function mining(cX, cY, x, y, pID){
+	chunks[cX + "x" + cY].chunk[x][y].beingMinedBy = pID;
+	players[pID].miningcX = cX;
+	players[pID].miningcY = cY;
+	players[pID].miningX = x;
+	players[pID].miningY = y;
 
+}
 
 
 
@@ -415,7 +427,7 @@ function selectPlayersLC(){
 			}
 		tick++;
 		//tick value determines how often chunks are loaded for all players, reduces lag significantly
-		if (tick === 200) {
+		if (tick === 20) {
 			tick = 0;
 		}
 
@@ -428,11 +440,43 @@ function selectPlayers(){
 	}
 }
 
+function selectPlayersMine(){
+	for (var i=0; i < players.length; i++){
+		isMining(i);
+	}
+}
+
+function isMining(p){
+	if(tick===19){
+		if(players[p].miningcX != undefined){
+			chunks[players[p].miningcX + "x" + players[p].miningcY].chunk[players[p].miningX][players[p].miningY].dura-=10;
+			if(chunks[players[p].miningcX + "x" + players[p].miningcY].chunk[players[p].miningX][players[p].miningY].dura === 0){
+
+				chunks[players[p].miningcX + "x" + players[p].miningcY].chunk[players[p].miningX][players[p].miningY].tree=false;
+			  	chunks[players[p].miningcX + "x" + players[p].miningcY].chunk[players[p].miningX][players[p].miningY].isSolid=false;
+			  	chunks[players[p].miningcX + "x" + players[p].miningcY].chunk[players[p].miningX][players[p].miningY].isEmpty=true;
+
+			  	players[p].wood += 1;
+
+			  	players[p].miningcX = undefined;
+			  	players[p].miningcY = undefined;
+			  	players[p].miningx = undefined;
+			  	players[p].miningy = undefined;
+
+
+
+			}
+		}
+	}
+}
+
+
 var tick = 0;
 function ping(){
 
 	selectPlayersLC();
 	selectPlayers();
+	selectPlayersMine();
 	emitInfo();
 	
 	
