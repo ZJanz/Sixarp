@@ -143,7 +143,7 @@ function drawChunk(){
               ctx.beginPath();
               //tree positioning is equal to playerXY multiplied by chunkXY times the size of 16 and the grid size of forty. Then array x/y position multiplied by grid size is added
               ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
-              ctx.fillStyle = "rgb(0, 255, 0)";
+              ctx.fillStyle = "rgb("+ ( (100 - (chunkInfo[xC+"x"+yC].chunk[x][y].dura)) * 2.55)  +", 255," + ((100 - (chunkInfo[xC+"x"+yC].chunk[x][y].dura)) * 2.55)  + ")";
               ctx.fill();
               ctx.closePath();
             }
