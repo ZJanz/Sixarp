@@ -214,7 +214,6 @@ function getChosenGrid(x, y){
   clickedArea.chunkClickedY = chunkClickedY
   clickedArea.chunkGridXClicked = chunkGridXClicked
   clickedArea.chunkGridYClicked = chunkGridYClicked
-  // alert("chunk " + chunkClickedX + ", " + chunkClickedY + " Grid " + chunkGridXClicked+", " + chunkGridYClicked);
 }
 
 
@@ -252,38 +251,39 @@ function placeWallHandler(){
   
 
 function keyDownHandler(e) {
-    if(e.key == "Right" || e.key == "ArrowRight") {
+    if(e.key == "Right" || e.key == "ArrowRight" || e.keyCode === 68) {
         state.rightPressed = true;
         socket.emit('movement', state);
     }
-    if(e.key == "Left" || e.key == "ArrowLeft") {
+    if(e.key == "Left" || e.key == "ArrowLeft" || e.keyCode === 65) {
         state.leftPressed = true;
        socket.emit('movement', state);
     }
-    if(e.key == "Down" || e.key == "ArrowDown") {
+    if(e.key == "Down" || e.key == "ArrowDown" || e.keyCode === 83) {
         state.downPressed = true;
        socket.emit('movement', state);
     }
-    if(e.key == "Up" || e.key == "ArrowUp") {
+    if(e.key == "Up" || e.key == "ArrowUp" || e.keyCode === 87) {
         state.upPressed = true;
         socket.emit('movement', state);
     }
 }
+//keycodes for WASD controls
 
 function keyUpHandler(e) {
-    if(e.key == "Right" || e.key == "ArrowRight") {
+    if(e.key == "Right" || e.key == "ArrowRight" || e.keyCode === 68) {
         state.rightPressed = false;
         socket.emit('movement', state);
     }
-    if(e.key == "Left" || e.key == "ArrowLeft") {
+    if(e.key == "Left" || e.key == "ArrowLeft" || e.keyCode === 65) {
         state.leftPressed = false;
         socket.emit('movement', state);
     }
-    if(e.key == "Down" || e.key == "ArrowDown") {
+    if(e.key == "Down" || e.key == "ArrowDown" || e.keyCode === 83) {
         state.downPressed = false;
         socket.emit('movement', state);
     }
-    if(e.key == "Up" || e.key == "ArrowUp") {
+    if(e.key == "Up" || e.key == "ArrowUp" || e.keyCode === 87) {
         state.upPressed = false;
         socket.emit('movement', state);
     }
