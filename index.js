@@ -1,4 +1,16 @@
-//index.js
+const fastnoise = require('fastnoisejs')
+const noise = fastnoise.Create(464)
+ 
+noise.SetNoiseType(fastnoise.Perlin)
+noise.SetFrequency(0.02)
+ 
+// for (let x = 0; x < 10; x++) {
+//   for (let y = 0; y < 10; y++) {
+//     console.log(noise.GetNoise(x, y))
+//   }
+// }
+
+
 
 var express = require('express');
 app = express();
@@ -39,6 +51,13 @@ var wallGrid = {
 
 }
 
+var rockGrid = {
+	name : "rock",
+	isEmpty : false,
+	isSolid : true,
+	dura : 150
+}
+
 
 function createChunk(cX, cY){
 	var chunkInfo = {
@@ -51,9 +70,17 @@ function createChunk(cX, cY){
 			for(var y = 0; y < chunkSize; y++){
 				chunkInfo.chunk[x].push({});
 				chunkInfo.chunk[x][y] = { ...defaultGrid};
-				if(Math.random()< 0.2){	
+				chunkInfo.chunk[x][y].noiseValue = noise.GetNoise(x + (chunkInfo.x*8), y + (chunkInfo.y*8))
+
+				var randomNum = Math.random()
+				if(randomNum< 0.2 && chunkInfo.chunk[x][y].noiseValue >= 0){	
 					chunkInfo.chunk[x][y] = { ...treeGrid};
 				}
+
+				if(randomNum< 0.2 && chunkInfo.chunk[x][y].noiseValue < 0){	
+					chunkInfo.chunk[x][y] = { ...rockGrid};
+				}
+
 			}
 		}
 		chunks[cX + "x" + cY] = chunkInfo;
