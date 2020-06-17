@@ -147,6 +147,21 @@ function drawChunk(){
               ctx.fill();
               ctx.closePath();
             }
+
+            if(chunkInfo[xC+"x"+yC].chunk[x][y].name === "rock"){
+              ctx.beginPath();
+              //tree positioning is equal to playerXY multiplied by chunkXY times the size of 16 and the grid size of forty. Then array x/y position multiplied by grid size is added
+              ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
+              ctx.fillStyle = "rgba(128,128,128,"+ chunkInfo[xC+"x"+yC].chunk[x][y].dura/150 + ")";
+              ctx.fill();
+              ctx.closePath();
+            }
+              // ctx.beginPath();
+              // //tree positioning is equal to playerXY multiplied by chunkXY times the size of 16 and the grid size of forty. Then array x/y position multiplied by grid size is added
+              // ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
+              // ctx.fillStyle = "rgb(" + (128 + Math.floor(128 * chunkInfo[xC+"x"+yC].chunk[x][y].noiseValue)) +", "  + (128 + Math.floor(128 * chunkInfo[xC+"x"+yC].chunk[x][y].noiseValue)) + ", " + (128 + Math.floor(128 * chunkInfo[xC+"x"+yC].chunk[x][y].noiseValue)) +")"
+              // ctx.fill();
+              // ctx.closePath();
           }
         }
         if(chunkInfo[xC+"x"+yC].x === clickedArea.chunkClickedX && chunkInfo[xC+"x"+yC].y === clickedArea.chunkClickedY){
@@ -156,8 +171,8 @@ function drawChunk(){
               ctx.stroke();
               ctx.closePath();
               var chosenGrid = chunkInfo[xC+"x"+yC].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked]
-              document.getElementById("gridValue").innerHTML = "name = " + chosenGrid.name + " isSolid = " + chosenGrid.isSolid + " isEmpty = " + chosenGrid.isEmpty + " chunkX = " + clickedArea.chunkClickedX + " chunkY = " + clickedArea.chunkClickedY + " gridX = " + clickedArea.chunkGridXClicked + " gridY = " + clickedArea.chunkGridYClicked;
-              if(chosenGrid.tree === true){
+              document.getElementById("gridValue").innerHTML = "name = " + chosenGrid.name + " isSolid = " + chosenGrid.isSolid + " isEmpty = " + chosenGrid.isEmpty + " chunkX = " + clickedArea.chunkClickedX + " chunkY = " + clickedArea.chunkClickedY + " gridX = " + clickedArea.chunkGridXClicked + " gridY = " + clickedArea.chunkGridYClicked + " noise value = " + chosenGrid.noiseValue;
+              if(chosenGrid.name === "tree"){
                 document.getElementById("chop").style.display = "inline";
               } else {
                 document.getElementById("chop").style.display = "none";
