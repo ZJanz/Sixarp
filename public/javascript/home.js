@@ -130,20 +130,20 @@ function drawChunk(){
         for(var x = 0; x < chunkSize; x++){
           for(var y = 0; y < chunkSize; y++){
 
-            if(chunkInfo[xC+"x"+yC].chunk[x][y].wall === true){
+            if(chunkInfo[xC+"x"+yC].chunk[x][y].name === "wall"){
               ctx.beginPath();
               //positioning is equal to playerXY multiplied by chunkXY times the size of 16 and the grid size of forty. Then array x/y position multiplied by grid size is added
               ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
-              ctx.fillStyle = "rgb(139,69,19)";
+              ctx.fillStyle = "rgba(139,69,19,"+ chunkInfo[xC+"x"+yC].chunk[x][y].dura/200 + ")";
               ctx.fill();
               ctx.closePath();
             }
 
-            if(chunkInfo[xC+"x"+yC].chunk[x][y].tree === true){
+            if(chunkInfo[xC+"x"+yC].chunk[x][y].name === "tree"){
               ctx.beginPath();
               //tree positioning is equal to playerXY multiplied by chunkXY times the size of 16 and the grid size of forty. Then array x/y position multiplied by grid size is added
               ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
-              ctx.fillStyle = "rgb("+ ( (100 - (chunkInfo[xC+"x"+yC].chunk[x][y].dura)) * 2.55)  +", 255," + ((100 - (chunkInfo[xC+"x"+yC].chunk[x][y].dura)) * 2.55)  + ")";
+              ctx.fillStyle = "rgba(0,255,0,"+ chunkInfo[xC+"x"+yC].chunk[x][y].dura/100 + ")";
               ctx.fill();
               ctx.closePath();
             }
@@ -156,7 +156,7 @@ function drawChunk(){
               ctx.stroke();
               ctx.closePath();
               var chosenGrid = chunkInfo[xC+"x"+yC].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked]
-              document.getElementById("gridValue").innerHTML = "tree = " + chosenGrid.tree + " isSolid = " + chosenGrid.isSolid + " isEmpty = " + chosenGrid.isEmpty + " chunkX = " + clickedArea.chunkClickedX + " chunkY = " + clickedArea.chunkClickedY + " gridX = " + clickedArea.chunkGridXClicked + " gridY = " + clickedArea.chunkGridYClicked;
+              document.getElementById("gridValue").innerHTML = "name = " + chosenGrid.name + " isSolid = " + chosenGrid.isSolid + " isEmpty = " + chosenGrid.isEmpty + " chunkX = " + clickedArea.chunkClickedX + " chunkY = " + clickedArea.chunkClickedY + " gridX = " + clickedArea.chunkGridXClicked + " gridY = " + clickedArea.chunkGridYClicked;
               if(chosenGrid.tree === true){
                 document.getElementById("chop").style.display = "inline";
               } else {
@@ -248,7 +248,7 @@ function placeWallHandler(){
   socket.emit('placeWall', clickedArea)
 }
 
-  
+var selectedSlot = 1;
 
 function keyDownHandler(e) {
     if(e.key == "Right" || e.key == "ArrowRight" || e.keyCode === 68) {
@@ -267,6 +267,45 @@ function keyDownHandler(e) {
         state.upPressed = true;
         socket.emit('movement', state);
     }
+    if(e.keyCode === 32) {
+      if(selectedSlot === 1){
+        chopHandler();
+      }
+      if(selectedSlot === 2){
+        placeWallHandler();
+      }
+      if(selectedSlot === 3){
+        fightHandler();
+      }
+    }
+    if(e.keyCode === 49) {
+      selectedSlot = 1;
+    }
+    if(e.keyCode === 50) {
+      selectedSlot = 2;
+    }
+    if(e.keyCode === 51) {
+      selectedSlot = 3;
+    }
+    if(e.keyCode === 52) {
+      selectedSlot = 4;
+    }
+    if(e.keyCode === 53) {
+      selectedSlot = 5;
+    }
+    if(e.keyCode === 54) {
+      selectedSlot = 6;
+    }
+    if(e.keyCode === 55) {
+      selectedSlot = 7;
+    }
+    if(e.keyCode === 56) {
+      selectedSlot = 8;
+    }
+    if(e.keyCode === 57) {
+      selectedSlot = 9;
+    }
+
 }
 //keycodes for WASD controls
 
