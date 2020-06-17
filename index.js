@@ -18,6 +18,28 @@ var playerRender = [];
 
 createChunk(0,0);
 
+
+var defaultGrid = {
+	isSolid : false,
+	isEmpty : true
+}
+
+var treeGrid = {
+	name : "tree",
+	isEmpty : false,
+	isSolid : true,
+	dura : 100
+}
+
+var wallGrid = {
+	name : "wall",
+	isEmpty : false,
+	isSolid : true,
+	dura : 200,
+
+}
+
+
 function createChunk(cX, cY){
 	var chunkInfo = {
 		x : cX,
@@ -28,20 +50,17 @@ function createChunk(cX, cY){
 			chunkInfo.chunk.push([]);
 			for(var y = 0; y < chunkSize; y++){
 				chunkInfo.chunk[x].push({});
-				chunkInfo.chunk[x][y].isSolid = false;
-				chunkInfo.chunk[x][y].isEmpty = true;
+				chunkInfo.chunk[x][y] = { ...defaultGrid};
 				if(Math.random()< 0.2){	
-					chunkInfo.chunk[x][y].tree = true;
-					chunkInfo.chunk[x][y].isEmpty = false;
-					chunkInfo.chunk[x][y].isSolid = true;
-					chunkInfo.chunk[x][y].dura = 100;
+					chunkInfo.chunk[x][y] = { ...treeGrid};
 				}
 			}
 		}
 		chunks[cX + "x" + cY] = chunkInfo;
 }
 
-
+//added this due to problems while coding creating chunk 0,0
+createChunk(0, 0)
 
 function loadChunk(p){
 	var positionX = players[p].gridX;
@@ -172,7 +191,7 @@ io.on('connection', function(socket){
 
   	socket.on('chop', function(clickedArea){
   		var range = 1;
-  		if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].tree === true && isBlockInRange(range, idPOS, clickedArea) === true){
+  		if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid === true && isBlockInRange(range, idPOS, clickedArea) === true){
 
   			mining(clickedArea.chunkClickedX, clickedArea.chunkClickedY, clickedArea.chunkGridXClicked, clickedArea.chunkGridYClicked, playerIDs.indexOf(socket.id));
 
@@ -190,9 +209,7 @@ io.on('connection', function(socket){
 	socket.on('placeWall', function(clickedArea){
 	  		var range = 1;
 	  		if(players[idPOS].wood > 0 && chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty === true && isBlockInRange(range, idPOS, clickedArea) === true){
-	  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].wall=true;
-				chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isSolid=true;
-				chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty=false;
+	  			chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked] = { ...wallGrid}
 
 				players[idPOS].wood -= 1;
 	  		}
@@ -446,15 +463,14 @@ function selectPlayersMine(){
 	}
 }
 
+
 function isMining(p){
 	if(tick===19){
 		if(players[p].miningcX != undefined){
 			chunks[players[p].miningcX + "x" + players[p].miningcY].chunk[players[p].miningX][players[p].miningY].dura-=10;
 			if(chunks[players[p].miningcX + "x" + players[p].miningcY].chunk[players[p].miningX][players[p].miningY].dura === 0){
 
-				chunks[players[p].miningcX + "x" + players[p].miningcY].chunk[players[p].miningX][players[p].miningY].tree=false;
-			  	chunks[players[p].miningcX + "x" + players[p].miningcY].chunk[players[p].miningX][players[p].miningY].isSolid=false;
-			  	chunks[players[p].miningcX + "x" + players[p].miningcY].chunk[players[p].miningX][players[p].miningY].isEmpty=true;
+				chunks[players[p].miningcX + "x" + players[p].miningcY].chunk[players[p].miningX][players[p].miningY] = { ...defaultGrid};
 
 			  	players[p].wood += 1;
 
