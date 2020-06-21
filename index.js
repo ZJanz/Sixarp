@@ -1,8 +1,13 @@
 const fastnoise = require('fastnoisejs')
-const noise = fastnoise.Create(464)
- 
-noise.SetNoiseType(fastnoise.Perlin)
-noise.SetFrequency(0.02)
+const noise1 = fastnoise.Create(464)
+const noise2 = fastnoise.Create(2341)
+noise1.SetNoiseType(fastnoise.Perlin)
+noise1.SetSeed(744212321)
+noise1.SetFrequency(0.01)
+
+noise2.SetNoiseType(fastnoise.Perlin)
+noise2.SetSeed(4324)
+noise2.SetFrequency(0.01)
  
 // for (let x = 0; x < 10; x++) {
 //   for (let y = 0; y < 10; y++) {
@@ -51,11 +56,73 @@ var wallGrid = {
 
 }
 
+var catusGrid = {
+	name : "catus",
+	isEmpty : false,
+	isSolid : true,
+	dura : 120
+}
+
+var savannaGrid = {
+	name : "savanna",
+	isEmpty : false,
+	isSolid : true,
+	dura : 120
+}
+
+var jungleGrid = {
+	name : "jungle",
+	isEmpty : false,
+	isSolid : true,
+	dura : 120
+}
+
+var plainGrid = {
+	name : "plain",
+	isEmpty : false,
+	isSolid : true,
+	dura : 120
+}
+
+var marshGrid = {
+	name : "marsh",
+	isEmpty : false,
+	isSolid : true,
+	dura : 120
+}
+
+var frostGrid = {
+	name : "frost",
+	isEmpty : false,
+	isSolid : true,
+	dura : 120
+}
+
+var snowyGrid = {
+	name : "snow",
+	isEmpty : false,
+	isSolid : true,
+	dura : 120
+}
+
+var frozenGrid = {
+	name : "frozen",
+	isEmpty : false,
+	isSolid : true,
+	dura : 120
+}
+
 var rockGrid = {
 	name : "rock",
 	isEmpty : false,
 	isSolid : true,
 	dura : 150
+}
+
+var waterGrid = {
+	name : "water",
+	isEmpty : false,
+	isSolid : false,
 }
 
 
@@ -70,16 +137,58 @@ function createChunk(cX, cY){
 			for(var y = 0; y < chunkSize; y++){
 				chunkInfo.chunk[x].push({});
 				chunkInfo.chunk[x][y] = { ...defaultGrid};
-				chunkInfo.chunk[x][y].noiseValue = noise.GetNoise(x + (chunkInfo.x*8), y + (chunkInfo.y*8))
+				var noiseValueT = noise1.GetNoise(x + (chunkInfo.x*8), y + (chunkInfo.y*8))
+				var noiseValueR = noise2.GetNoise(x + (chunkInfo.x*8), y + (chunkInfo.y*8))
 
 				var randomNum = Math.random()
-				if(randomNum< 0.2 && chunkInfo.chunk[x][y].noiseValue >= 0){	
+				if(randomNum< 0.2 && noiseValueT > 0.3 && noiseValueR < -0.3){	
+					chunkInfo.chunk[x][y] = { ...catusGrid};
+				}
+
+				if(randomNum< 0.2 && noiseValueT > 0.3 && noiseValueR > -0.3 && noiseValueR < 0.3){	
+					chunkInfo.chunk[x][y] = { ...savannaGrid};
+				}
+
+				if(randomNum< 0.2 && noiseValueT > 0.3 && noiseValueR > 0.3){	
+					chunkInfo.chunk[x][y] = { ...jungleGrid};
+				}
+
+				if(randomNum< 0.2 && noiseValueT < 0.3 && noiseValueT > -0.3 && noiseValueR < -0.3){	
+					chunkInfo.chunk[x][y] = { ...plainGrid};
+				}
+
+				if(randomNum< 0.2 && noiseValueT < 0.3 && noiseValueT > -0.3 && noiseValueR > -0.3 && noiseValueR < 0.3){	
 					chunkInfo.chunk[x][y] = { ...treeGrid};
 				}
 
-				if(randomNum< 0.2 && chunkInfo.chunk[x][y].noiseValue < 0){	
-					chunkInfo.chunk[x][y] = { ...rockGrid};
+				if(randomNum< 0.2 && noiseValueT < 0.3 && noiseValueT > -0.3 && noiseValueR > 0.3){	
+					chunkInfo.chunk[x][y] = { ...marshGrid};
 				}
+
+				if(randomNum< 0.2 && noiseValueT < -0.3 && noiseValueR < -0.3){	
+					chunkInfo.chunk[x][y] = { ...frostGrid};
+				}
+
+				if(randomNum< 0.2 && noiseValueT < -0.3 && noiseValueR > -0.3 && noiseValueR < 0.3){	
+					chunkInfo.chunk[x][y] = { ...snowyGrid};
+				}
+
+				if(randomNum< 0.2 && noiseValueT < -0.3 && noiseValueR > 0.3){	
+					chunkInfo.chunk[x][y] = { ...frozenGrid};
+				}
+
+				// if(randomNum< 0.2 && (noiseValueT >= -0.2 && noiseValueT < 0.2)  && (noiseValueR >= -0.2 && noiseValueR < 0.2)){	
+				// 	chunkInfo.chunk[x][y] = { ...treeGrid};
+				// }
+
+				// if(randomNum< 0.2 && noiseValueT < -0.8 && noiseValueR < -0.8 ){	
+				// 	chunkInfo.chunk[x][y] = { ...rockGrid};
+				// }
+
+				// if(noiseValueR >= 0.9){	
+				// 	chunkInfo.chunk[x][y] = { ...waterGrid};
+				// }
+
 
 			}
 		}
@@ -431,7 +540,7 @@ function isBlockInRange(r, idPOS, clickedArea){
 
 
   		if(players[idPOS].chunkX+1 === clickedArea.chunkClickedX && players[idPOS].chunkY -1 === clickedArea.chunkClickedY){
-	  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= chopArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - 8 - range){
+	  		if(players[idPOS].chunkGridX <= clickedArea.chunkGridXClicked + 8 + range && players[idPOS].chunkGridX >= clickedArea.chunkGridXClicked + 8 - range && players[idPOS].chunkGridY <= clickedArea.chunkGridYClicked - 8 + range && players[idPOS].chunkGridY >= chopArea.chunkGridYClicked - 8 - range){
 	  			if(chunks[clickedArea.chunkClickedX + "x" + clickedArea.chunkClickedY].chunk[clickedArea.chunkGridXClicked][clickedArea.chunkGridYClicked].isEmpty = true){
 		  			return true;
 	  			}
