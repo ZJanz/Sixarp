@@ -141,18 +141,89 @@ function drawChunk(){
 
             if(chunkInfo[xC+"x"+yC].chunk[x][y].name === "tree"){
               ctx.beginPath();
-              //tree positioning is equal to playerXY multiplied by chunkXY times the size of 16 and the grid size of forty. Then array x/y position multiplied by grid size is added
               ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
               ctx.fillStyle = "rgba(0,255,0,"+ chunkInfo[xC+"x"+yC].chunk[x][y].dura/100 + ")";
               ctx.fill();
               ctx.closePath();
             }
 
+            if(chunkInfo[xC+"x"+yC].chunk[x][y].name === "jungle"){
+              ctx.beginPath();
+              ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
+              ctx.fillStyle = "rgba(2,89,57,"+ chunkInfo[xC+"x"+yC].chunk[x][y].dura/120 + ")";
+              ctx.fill();
+              ctx.closePath();
+            }
+
+             if(chunkInfo[xC+"x"+yC].chunk[x][y].name === "catus"){
+              ctx.beginPath();
+              ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
+              ctx.fillStyle = "rgba(255,0,0,"+ chunkInfo[xC+"x"+yC].chunk[x][y].dura/120 + ")";
+              ctx.fill();
+              ctx.closePath();
+            }
+
+            if(chunkInfo[xC+"x"+yC].chunk[x][y].name === "savanna"){
+              ctx.beginPath();
+              ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
+              ctx.fillStyle = "rgba(210,180,140,"+ chunkInfo[xC+"x"+yC].chunk[x][y].dura/120 + ")";
+              ctx.fill();
+              ctx.closePath();
+            }
+
+            if(chunkInfo[xC+"x"+yC].chunk[x][y].name === "plain"){
+              ctx.beginPath();
+              ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
+              ctx.fillStyle = "rgba(5,237,152,"+ chunkInfo[xC+"x"+yC].chunk[x][y].dura/120 + ")";
+              ctx.fill();
+              ctx.closePath();
+            }
+
+            if(chunkInfo[xC+"x"+yC].chunk[x][y].name === "marsh"){
+              ctx.beginPath();
+              ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
+              ctx.fillStyle = "rgba(0,153,77,"+ chunkInfo[xC+"x"+yC].chunk[x][y].dura/120 + ")";
+              ctx.fill();
+              ctx.closePath();
+            }
+
+            if(chunkInfo[xC+"x"+yC].chunk[x][y].name === "frost"){
+              ctx.beginPath();
+              ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
+              ctx.fillStyle = "rgba(77,106,255,"+ chunkInfo[xC+"x"+yC].chunk[x][y].dura/120 + ")";
+              ctx.fill();
+              ctx.closePath();
+            }
+
+            if(chunkInfo[xC+"x"+yC].chunk[x][y].name === "snow"){
+              ctx.beginPath();
+              ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
+              ctx.fillStyle = "rgba(53,73,176,"+ chunkInfo[xC+"x"+yC].chunk[x][y].dura/120 + ")";
+              ctx.fill();
+              ctx.closePath();
+            }
+
+            if(chunkInfo[xC+"x"+yC].chunk[x][y].name === "frozen"){
+              ctx.beginPath();
+              ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
+              ctx.fillStyle = "rgba(25,35,84,"+ chunkInfo[xC+"x"+yC].chunk[x][y].dura/120 + ")";
+              ctx.fill();
+              ctx.closePath();
+            }
+
+
             if(chunkInfo[xC+"x"+yC].chunk[x][y].name === "rock"){
               ctx.beginPath();
-              //tree positioning is equal to playerXY multiplied by chunkXY times the size of 16 and the grid size of forty. Then array x/y position multiplied by grid size is added
               ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
               ctx.fillStyle = "rgba(128,128,128,"+ chunkInfo[xC+"x"+yC].chunk[x][y].dura/150 + ")";
+              ctx.fill();
+              ctx.closePath();
+            }
+
+            if(chunkInfo[xC+"x"+yC].chunk[x][y].name === "water"){
+              ctx.beginPath();
+              ctx.rect(x * gridSize - players[currentPlayer].x + 320 + (chunkInfo[xC+"x"+yC].x * chunkSize * gridSize), y * gridSize - players[currentPlayer].y + 240 + (chunkInfo[xC+"x"+yC].y * chunkSize * gridSize), gridSize, gridSize)
+              ctx.fillStyle = "rgba(0,0,255,"+ 1 +")";
               ctx.fill();
               ctx.closePath();
             }
