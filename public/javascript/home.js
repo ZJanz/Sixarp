@@ -455,20 +455,23 @@ function settlerToCanvas(hexX, hexZ, x, z, maginify, popup){
 function scoutToCanvas(hexX, hexZ, x, z, maginify, popup, unit){
 	var image = document.getElementById("scoutWalk")
 	var selectedPop = 0;
+	if(gameInfo.unitAnimations[`${unit.ownerArrayIndex}${unit.arrayIndex}`] === undefined){
+		gameInfo.unitAnimations[`${unit.ownerArrayIndex}${unit.arrayIndex}`] = {};
+	}
 	if (unit.hitting === true){
-		if(gameInfo.unitAnimations[`${unit.ownerArrayIndex}${unit.arrayIndex}`] === undefined){
-			gameInfo.unitAnimations[`${unit.ownerArrayIndex}${unit.arrayIndex}`] = {}
-		}
+		
 		if(gameInfo.unitAnimations[`${unit.ownerArrayIndex}${unit.arrayIndex}`].hitting === undefined || gameInfo.unitAnimations[`${unit.ownerArrayIndex}${unit.arrayIndex}`].hitting === false){
 			gameInfo.unitAnimations[`${unit.ownerArrayIndex}${unit.arrayIndex}`].animationStart = Date.now();
 			gameInfo.unitAnimations[`${unit.ownerArrayIndex}${unit.arrayIndex}`].hitting = true;
 		}
 	}
-	if (gameInfo.unitAnimations[`${unit.ownerArrayIndex}${unit.arrayIndex}`] != undefined && gameInfo.unitAnimations[`${unit.ownerArrayIndex}${unit.arrayIndex}`].hitting === true){
-		var anInfo = gameInfo.unitAnimations[`${unit.ownerArrayIndex}${unit.arrayIndex}`]
+	var anInfo = gameInfo.unitAnimations[`${unit.ownerArrayIndex}${unit.arrayIndex}`]
+	if (anInfo != undefined && anInfo.hitting === true){
+		
 		var currentTime = Date.now();
 		const elapsedTime = currentTime - anInfo.animationStart;
 		anInfo.progress = Math.min(elapsedTime / 1000, 1);
+		anInfo.inAnimation = true;
 		image = document.getElementById("scoutAttack")
 		const startPosition = hexCordsToCanvas(hexX, hexZ, maginify);
 		
@@ -485,7 +488,9 @@ function scoutToCanvas(hexX, hexZ, x, z, maginify, popup, unit){
 		var framePicture = Math.floor(anInfo.progress * 8)//put # of frames in animation here
 
 		if(anInfo.progress >= 1){
-			gameInfo.unitAnimations[`${unit.ownerArrayIndex}${unit.arrayIndex}`].hitting = false;
+			anInfo.hitting = false;
+			anInfo.walkingBack = true;
+			anInfo.inAnimation = false;
 		}
 
 		context.beginPath();
@@ -499,10 +504,13 @@ function scoutToCanvas(hexX, hexZ, x, z, maginify, popup, unit){
 		context.closePath();
 	}
 	else if (unit.moving === true){
+		anInfo.inAnimation = true;
+		anInfo.moving = true;
 		var moveLength = 1;
 		if(unit.attacking === true){
 			moveLength = 0.5;
 		}
+		anInfo.inAnimation = true;
 		const startPosition = hexCordsToCanvas(hexX, hexZ, maginify);
 		
 
@@ -529,8 +537,13 @@ function scoutToCanvas(hexX, hexZ, x, z, maginify, popup, unit){
 			32*maginify, 28*maginify
 			)
 		context.closePath();
+	} else {
+		if (anInfo.moving===true){
+			anInfo.moving = false;
+			anInfo.inAnimation = false;
+		}
 	}
-	else{
+	if(anInfo.inAnimation === false||anInfo.inAnimation === undefined){
 		// var framePicture = Math.floor(frameSecond * 7)
 		if(popup === true){
 			selectedPop = 8
